@@ -1,0 +1,18 @@
+{
+	"ids": [
+		{
+			"id": 1527540866428,
+			"username": "krixano",
+			"address": "1Jqrw1mySvE2sd3uaxTMdCBaYtVMJohcC2",
+			"signature": "IMignJiQ64rfKRjasnWBowN3e28dZ5meE/kFT8vq41hlMbO+HR4VnQ6IjYS9jVsBNOf2x9kzvp7d9eVTICf5Mvk=",
+			"date_added": 1527540866428
+		},
+		{
+			"id": 1527541762910,
+			"username": null,
+			"address": "1BPPmTHLB4CW9KimCGcMBpkTqMwsov2orU",
+			"signature": "H5f+U5p8z7UXbRHswvSdEzAVR2EVcgRY4ah0CduySpA0MUAUxC8makrAtvyBzca/3+xk/++EVQl+O47dVfNpV4Y=",
+			"date_added": 1527541762910
+		}
+	]
+}
