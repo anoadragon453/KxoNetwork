@@ -6,7 +6,8 @@ version = "0.1";
 var defaultLang = require("./default-lang.js");
 
 waitingForResponse = false;
-permissionaddress = "1M3V3rtUB2mbbVtdcTHF4TNSuwDehd1erU"; // aka public key of kxoid.
+permissionaddress = "12F5SvxoPR128aiudte78h8pY7mobroG6V"; // aka public address of kxoid.
+base64_publickey = "BOVHKzLh7FHFKCx0DjPj7BCFkuVH0Qcf95uh4Ns69LCRGiUkF+4tbe+IhbilIO8AfRDztBZ4y7ELtfOYPLrx2TA=";
 certname = "kxoid.bit";
 
 /*var MarkdownIt = require("markdown-it");

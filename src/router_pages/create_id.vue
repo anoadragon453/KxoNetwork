@@ -4,11 +4,16 @@
 			<v-card style="margin: 0;">
 				<v-card-text>
 					<v-text-field id="username" name="username" ref="usernameinput" label="Username" clearable required suffix="@kxoid.bit" v-model="username" :rules="getRules()"></v-text-field>
-					<v-btn @click="register()">Create Id</v-btn>
+					<v-btn @click="register()" :loading="loading">Create Id</v-btn>
 
 					<v-divider style="margin-top: 15px; margin-bottom: 15px;"></v-divider>
 
-					<p>KxoId is a semi-decentralized Id Provider for ZeroNet that offers unique usernames. It uses the <a href="#">p2p-Messages plugin</a> created by @Git Center to broadcast user information over the ZeroNet network, where a set of "trusted clients" receive the messages, verify the usernames are unique, add the id information to the public database, and broadcast back the signatures created by the private key (which is only available to these trusted clients).</p>
+					<p>KxoId is a semi-decentralized Id Provider for ZeroNet that offers unique usernames. It uses the <a href="#">PeerMessage plugin</a> created by @Git Center to broadcast user information over the ZeroNet network, where a set of "trusted clients" receive the messages, verify the usernames are unique, add the id information to the public database, and broadcast back the signatures created by the private key (which is only available to these trusted clients).</p>
+
+					<v-divider style="margin-top: 15px; margin-bottom: 15px;"></v-divider>
+
+					<p>For developers, you can support KxoId by adding this to the "cert_signers" of your users content.json file:</p>
+					<p>"kxoid.bit": ["{{ permissionaddress }}"]</p>
 				</v-card-text>
 			</v-card>
 		</v-container>
@@ -27,7 +32,9 @@
 		data: () => {
 			return {
 				username: "",
-				error: ""
+				error: "",
+				permissionaddress: permissionaddress,
+				loading: false
 			};
 		},
 		beforeMount: function() {
@@ -64,10 +71,11 @@
 				this.error = "";
 				console.log(messageParams);
 				var mainMessage = messageParams.message.split('|')[1];
+				var decrypted = messageParams.message.split('|').slice(1).join('|'); // TODO: Hack
 				if (messageParams.message.startsWith('error|')) {
 					// Decrypt the main message
-					page.cmdp("eciesDecrypt", mainMessage, {"privatekey": permissionaddress})
-						.then((decrypted) => {
+					//page.cmdp("eciesDecrypt", [mainMessage, base64_publickey])
+					//	.then((decrypted) => {
 							// Verify that sent to client
 							var messageParts = decrypted.split('|');
 							if (messageParts[0] == page.siteInfo.auth_address) {
@@ -88,12 +96,13 @@
 								self.$refs["usernameinput"].validate(true);
 								//page.cmdp("wrapperNotification", ["error", messageParts[1]]);
 								waitingForResponse = false;
+								self.loading = false;
 							}
-						});
+					//	});
 				} else if (messageParams.message.startsWith('success|')) {
 					// Decrypt the main message
-					page.cmdp("eciesDecrypt", mainMessage, {"privatekey": permissionaddress})
-						.then((decrypted) => {
+					//page.cmdp("eciesDecrypt", [mainMessage, base64_publickey])
+					//	.then((decrypted) => {
 							// Verify that sent to client
 							var messageParts = decrypted.split('|');
 							if (messageParts[0] == page.siteInfo.auth_address) {
@@ -110,10 +119,11 @@
 										}
 									});
 								waitingForResponse = false;
+								self.loading = false;
 								// Navigate to homepage
 								self.goto('');
 							}
-						});
+					//	});
 				}
 			},
 			goto: function(to) {
@@ -128,7 +138,7 @@
 					alert("You already have a KxoId.");
 					return;
 				}
-				var username = this.username;
+				var username = this.username.toLowerCase();
 				if (username === "") {
 					username = page.siteInfo.auth_address.slice(0, 13);
 				}
@@ -138,12 +148,14 @@
 				var message = username;
 				// When received back signed, do .toString("base64") before adding cert.
 				console.log(message);
-				page.cmdp("eciesEncrypt", message, { "publickey": permissionaddress })
+				var self = this;
+				page.cmdp("eciesEncrypt", { "text": message, "publickey": base64_publickey })
 					.then((encryptedMsg) => {
 						console.log("Encrypted: " + encryptedMsg);
 						waitingForResponse = true;
+						self.loading = true;
 						page.cmdp("peerBroadcast", {message: "register|" + encryptedMsg, immediate: true, privatekey: false});
-					});
+					}).catch((error) => console.log(error));
 			}
 		}
 	}
