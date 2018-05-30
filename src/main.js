@@ -153,6 +153,7 @@ class ZeroApp extends ZeroFrame {
 			app.siteInfo = message.params;
 			app.getUserInfo();
 		} else if (cmd === "peerReceive" && waitingForResponse) {
+			this.cmd("peerValid", [message.params.hash]);
 			if (app.peerReceiveCallback != null && typeof app.peerReceiveCallback == "function") {
 				app.peerReceiveCallback(message.params);
 			}
