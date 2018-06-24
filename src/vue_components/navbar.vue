@@ -9,6 +9,9 @@
 		    <v-list>
 		    	<v-subheader>Network Zites</v-subheader>
 		    	<v-list-tile @click="">
+		    		<v-list-tile-title>KxoMail</v-list-tile-title>
+		    	</v-list-tile>
+		    	<v-list-tile @click="">
 		    		<v-list-tile-title>KxoZites</v-list-tile-title>
 		    	</v-list-tile>
 		    	<v-list-tile @click="">

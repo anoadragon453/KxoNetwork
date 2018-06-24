@@ -22,11 +22,18 @@
 			"date_added": 1527586718630
 		},
 		{
-			"id": 1527676052424,
+			"id": 1527677548159,
 			"username": "piloth",
 			"address": "1AJj7QAaqrJ6XYf3a73sPfgKG5EXAhmgYq",
 			"signature": "G6LClwaOsJxywv9Um4zw6h151VFobzRay+W0qE1eEoZ6C0ns+PKXF9ADleXS5N7BtQRqwVL+P1RQBllSeIRUcU4=",
-			"date_added": 1527676052424
+			"date_added": 1527677548159
+		},
+		{
+			"id": 1528100674919,
+			"username": "zerolstn",
+			"address": "1JgMGpq1CFxazKd7wn1D58M33YKbAiXam8",
+			"signature": "GycuG75ZqKrtl1hOF9jaJMGytuGQbk3Vu4HSLCEkGOzjXf1WhO3KvppEn2nfv66/ABodKpzgJSHos2zw58hgfRc=",
+			"date_added": 1528100674919
 		}
 	]
 }

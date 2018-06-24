@@ -48,7 +48,8 @@ var app = new Vue({
 		userInfo: null,
 		gettingUserInfo: true,
 		langTranslation: defaultLang,
-		peerReceiveCallback: null
+		peerReceiveCallback: null,
+		updateCallback: null
 	},
 	methods: {
 		getUserInfo: function(f = null) {
@@ -115,6 +116,10 @@ var app = new Vue({
 		setCallback: function(name, callback) {
 			console.log("Setting '" + name + "Callback' callback to ", callback);
 			this[name + "Callback"] = callback;
+		},
+		callCallback: function(name, ...params) {
+			this[name + "Callback"](...params);
+			this.$emit(name);
 		}
 	}
 });
@@ -141,6 +146,7 @@ class ZeroApp extends ZeroFrame {
 				console.log(siteInfo);
 				self.siteInfo = siteInfo;
 				app.siteInfo = siteInfo;
+				app.callCallback("update");
 				if (siteInfo.address!="1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P" && !siteInfo.settings.own){self.cmdp("wrapperNotification", ["warning", "Note: This was cloned from another zite. You<br>\ncan find the original zite at this address:<br>\n 1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P."]);}
 				app.getUserInfo();
 			});
@@ -154,13 +160,15 @@ class ZeroApp extends ZeroFrame {
 			app.getUserInfo();
 		} else if (cmd === "peerReceive" && waitingForResponse) {
 			this.cmd("peerValid", [message.params.hash]);
-			if (app.peerReceiveCallback != null && typeof app.peerReceiveCallback == "function") {
+			app.callCallback("peerReceive", message.params);
+			/*if (app.peerReceiveCallback != null && typeof app.peerReceiveCallback == "function") {
 				app.peerReceiveCallback(message.params);
-			}
+			}*/
 		}
 
 		if (message.params.event && message.params.event[0] === "file_done") {
-			app.$emit("update");
+			//app.$emit("update");
+			app.callCallback("update");
 		}
 	}
 
@@ -175,6 +183,10 @@ class ZeroApp extends ZeroFrame {
     unimplemented() {
         return page.cmdp("wrapperNotification", ["info", "Unimplemented!"]);
 	}
+
+	/*getZitesSearch() {
+		
+	}*/
 }
 
 page = new ZeroApp();

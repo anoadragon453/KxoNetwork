@@ -21,18 +21,28 @@
 					</v-tabs>
 				</v-toolbar>
 			</v-card>
+
+			<v-card v-for="result in results" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px;">
+				<strong>{{ result.title }}</strong>
+			</v-card>
 		</v-container>
 	</v-container>
 </template>
 
 <script>
 	var Router = require("../libs/router.js");
+	var searchDbQuery = require("../libs/search.js");
 
 	module.exports = {
 		props: ["userInfo", "langTranslation"],
 		name: "home",
 		data: () => {
 			return {
+				currentTab: "zites",
+				results: [],
+				searchQuery: "",
+				pageNum: 0,
+				limit: 8,
 			};
 		},
 		beforeMount: function() {
@@ -49,6 +59,18 @@
 					// TODO
 				});*/
 			}
+
+			this.$emit("setcallback", "update", function() {
+                self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E");
+			});
+
+			this.$parent.$on("update", function() {
+                //self.getQuestions();
+                self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E");
+			});
+
+			this.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E");
+			// 1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E
 		},
 		computed: {
 			isLoggedIn: function() {
@@ -57,13 +79,59 @@
 			}
 		},
 		methods: {
+			getCorsAndDb: function(address) {
+				console.log("Test");
+                var self = this;
+                this.pageNum = 0;
+                if(page.siteInfo.settings.permissions.indexOf("Cors:" + address) < 0) {
+                    page.cmd("corsPermission", address, function() {
+                            self.getResults();
+                        });
+                } else {
+                    self.getResults();
+                }
+            },
+            getResults: function() {
+				var searchSelects = [
+					{ col: "title", score: 5 },
+					{ col: "domain", score: 5 },
+					{ col: "address", score: 5 },
+					{ col: "tags", score: 4 },
+					{ col: "category_slug", score: 4 },
+					{ col: "merger_category", score: 4 },
+					{ col: "creator", score: 3 },
+					{ col: "description", score: 2 },
+					//{ skip: !app.userInfo || !app.userInfo.auth_address, col: "bookmarkCount", select: this.subQueryBookmarks(), inSearchMatchesAdded: false, inSearchMatchesOrderBy: true, score: 6 } // TODO: Rename inSearchMatchesAdded, and isSearchMatchesOrderBy
+				];
+
+				var query = searchDbQuery(this, this.searchQuery, {
+					orderByScore: true,
+					id_col: "id",
+					select: "*",
+					searchSelects: searchSelects,
+					table: "zites",
+					join: "LEFT JOIN json USING (json_id)",
+					//where: languageWhere,
+					page: this.pageNum,
+					afterOrderBy: "date_added ASC",
+					limit: this.limit
+				});
+
+				var self = this;
+				page.cmd("as", ["1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", "dbQuery", [query]], function(results) {
+					console.log("Results: ", results);
+					self.results = results;
+				});
+				//return this.cmdp("as", )
+				//return this.cmdp("dbQuery", [query]);
+            },
 			goto: function(to) {
 				Router.navigate(to);
 			},
 			login: function() {
 				page.selectUser();
 				return false;
-			}
+			},
 		}
 	}
 </script>
