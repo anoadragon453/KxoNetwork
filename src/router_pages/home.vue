@@ -387,7 +387,7 @@
 				];
 
 
-				if (this.searchQuery && this.searchQuery[this.searchQuery.length - 1] == "?" || this.searchQuery.startsWith("how") || this.searchQuery.startsWith("where") || this.searchQuery.startsWith("what") || this.searchQuery.startsWith("when") || this.searchQuery.startsWith("could") || this.searchQuery.startsWith("who") || this.searchQuery.startsWith("where") || this.searchQuery.startsWith("why")) {
+				if (this.searchQuery && (this.searchQuery[this.searchQuery.length - 1] == "?" || this.searchQuery.startsWith("how") || this.searchQuery.startsWith("where") || this.searchQuery.startsWith("what") || this.searchQuery.startsWith("when") || this.searchQuery.startsWith("could") || this.searchQuery.startsWith("who") || this.searchQuery.startsWith("where") || this.searchQuery.startsWith("why"))) {
 					query = searchDbQuery(this, this.searchQuery || "", {
 						orderByScore: true,
 						id_col: "question_id",
