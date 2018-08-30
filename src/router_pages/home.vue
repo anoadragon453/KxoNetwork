@@ -22,7 +22,7 @@
 				</v-toolbar>
 			</v-card>
 
-			<div>Time: {{ searchTime / 1000.0 }} seconds</div>
+			<div style="margin-left: 15px; margin-right: 15px; margin-top: 8px;">Time: {{ searchTime / 1000.0 }} seconds</div>
 
 			<v-container style="max-width: 50%; float: left;">
 				<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + result.address || '#')">
@@ -36,6 +36,20 @@
 				</v-card>
 			</v-container>
 			<div style="clear: both;"></div>
+			
+			<v-container>
+				<v-card v-for="result in gitCenterResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + result.address || '#')">
+					<div style="text-align: center;"><strong style="color: blue;">Git Center: {{ result.title }}</strong></div>
+					<div style="margin-bottom: 5px; text-align: center;">{{ result.description }}</div>
+					<small>{{ result.address }}</small>
+				</v-card>
+			</v-container>
+			<v-container>
+				<v-card v-for="result in zeroExchangeResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/ZeroExchange.bit/?/' + result.site + '/' + result.directory.replace(/data\/users\//, '') + '/' + result.date_added || '#')">
+					<div style="text-align: center;"><strong style="color: blue;">ZeroExchange: {{ result.title }}</strong></div>
+					<div style="margin-bottom: 5px; text-align: center;">{{ result.body.slice(0, 150) }}</div>
+				</v-card>
+			</v-container>
 
 			<v-btn style="margin-top: 16px; float: left;" @click="prevPage()">&lt;</v-btn>
 			<v-btn style="margin-top: 16px; float: right;" @click="nextPage()">&gt;</v-btn>
@@ -58,6 +72,8 @@
 				prevResults: [],
 				results: [],
 				nextResults: [],
+				gitCenterResults: [],
+				zeroExchangeResults: [],
 				searchQuery: "",
 				previousSearchQuery: null,
 				pageNum: 0,
@@ -85,7 +101,11 @@
 			this.$emit("setcallback", "update", function() {
                 self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
 					self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
-						self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", true);
+						self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
+							self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
+								self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", true);
+							});
+						});
 					});
 				});
 			});
@@ -94,14 +114,22 @@
                 //self.getQuestions();
                 self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
 					self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
-						self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", true);
+						self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
+							self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
+								self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", true);
+							});
+						});
 					});
 				});
 			});
 
 			self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
 				self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
-					self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", true);
+					self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
+						self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
+							self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", true);
+						});
+					});
 				});
 			});
 			// 1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E
@@ -133,11 +161,13 @@
             	if (!pageChange && this.previousSearchQuery == this.searchQuery) return;
 
             	var setNextResults = false;
-            	var setPrevResults = false;
+            	//var setPrevResults = false;
 
             	this.previousSearchQuery = this.searchQuery;
             	this.currentQueries = 0;
             	this.results = [];
+            	this.gitCenterResults = [];
+            	this.zeroExchangeResults = [];
             	this.searchTime = 0;
             	var startTime = new Date();
 
@@ -145,27 +175,25 @@
             	var pageNum = this.pageNum;
             	
             	if (pageChange && next && this.nextResults.length > 0) {
-        			this.prevResults = this.results;
-            		this.results = this.nextResults;
+        			this.prevResults = this.results.slice(0);
+            		this.results = this.nextResults.slice(0);
+            		this.nextResults = [];
             		setNextResults = true;
             		this.searchTime = Math.abs(new Date() - startTime);
             		pageNum++;
-            		this.nextResults = [];
 	            } else if (pageChange && previous && this.prevResults.length > 0) {
-	            	console.log(previous);
-	            	console.log(this.prevResults);
-					//this.nextResults = this.results;
-            		this.results = this.prevResults;
-            		setNextResults = false;
-            		setPrevResults = true;
-            		this.searchTime = Math.abs(new Date() - startTime);
+					this.nextResults = this.results.slice(0);
+            		this.results = this.prevResults.slice(0);
             		this.prevResults = [];
-            		this.nextResults = []; // TODO
-            		pageNum--;
+            		//this.nextResults = []; // TODO
+            		setNextResults = true;
+            		this.searchTime = Math.abs(new Date() - startTime);
+            		pageNum++;
             	} else if (!pageChange) {
             		this.nextResults = [];
             		this.prevResults = [];
             		setNextResults = false;
+            		//setPrevResults = false;
             		this.pageNum = 0;
             		pageNum = 0;
             	}
@@ -205,20 +233,21 @@
 				var self = this;
 				page.cmd("as", ["1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", "dbQuery", [query]], function(results) {
 					if (subPageNum == 0) {
-						if (!setNextResults && !setPrevResults){
+						if (!setNextResults){
 							self.results = self.results.concat(results.slice(0, 4));
 							self.nextResults = self.nextResults.concat(results.slice(4));
 						}
-						else self.nextResults = self.nextResults.concat(results.slice(0, 4));
+						else if (setNextResults) self.nextResults = self.nextResults.concat(results.slice(0, 4));
 					}
 					else {
-						if (!setNextResults && !setPrevResults){
+						if (!setNextResults) {
 							self.results = self.results.concat(results.slice(4));
+							self.prevResults = self.prevResults.concat(results.slice(0, 4));
 						}
-						else self.nextResults = self.nextResults.concat(results.slice(4));
+						else if (setNextResults) self.nextResults = self.nextResults.concat(results.slice(4));
 					}
 
-					if (!setNextResults && !setPrevResults) {
+					if (!setNextResults) {
 						if (self.searchTime == 0) {
 							var date = new Date();
 							self.searchTime = Math.abs(date - startTime);
@@ -264,20 +293,21 @@
 
 				page.cmd("as", ["1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", "dbQuery", [query]], function(results) {
 					if (subPageNum == 0) {
-						if (!setNextResults && !setPrevResults){
+						if (!setNextResults){
 							self.results = self.results.concat(results.slice(0, 4));
 							self.nextResults = self.nextResults.concat(results.slice(4));
 						}
-						else self.nextResults = self.nextResults.concat(results.slice(0, 4));
+						else if (setNextResults) self.nextResults = self.nextResults.concat(results.slice(0, 4));
 					}
 					else {
-						if (!setNextResults && !setPrevResults){
+						if (!setNextResults) {
 							self.results = self.results.concat(results.slice(4));
+							self.prevResults = self.prevResults.concat(results.slice(0, 4));
 						}
-						else self.nextResults = self.nextResults.concat(results.slice(4));
+						else if (setNextResults) self.nextResults = self.nextResults.concat(results.slice(4));
 					}
 
-					if (!setNextResults && !setPrevResults) {
+					if (!setNextResults) {
 						if (self.searchTime == 0) {
 							var date = new Date();
 							self.searchTime = Math.abs(date - startTime);
@@ -313,20 +343,21 @@
 
 				page.cmd("as", ["186THqMWuptrZxq1rxzpguAivK3Bs6z84o", "dbQuery", [query]], function(results) {
 					if (subPageNum == 0) {
-						if (!setNextResults && !setPrevResults){
+						if (!setNextResults){
 							self.results = self.results.concat(results.slice(0, 4));
 							self.nextResults = self.nextResults.concat(results.slice(4));
 						}
-						else self.nextResults = self.nextResults.concat(results.slice(0, 4));
+						else if (setNextResults) self.nextResults = self.nextResults.concat(results.slice(0, 4));
 					}
 					else {
-						if (!setNextResults && !setPrevResults){
+						if (!setNextResults) {
 							self.results = self.results.concat(results.slice(4));
+							self.prevResults = self.prevResults.concat(results.slice(0, 4));
 						}
-						else self.nextResults = self.nextResults.concat(results.slice(4));
+						else if (setNextResults) self.nextResults = self.nextResults.concat(results.slice(4));
 					}
 
-					if (!setNextResults && !setPrevResults) {
+					if (!setNextResults) {
 						if (self.searchTime == 0) {
 							var date = new Date();
 							self.searchTime = Math.abs(date - startTime);
@@ -338,6 +369,59 @@
 						}
 					}
 				});
+
+				var searchSelects_GitCenter = [
+					{ col: "address", score: 5 },
+					{ col: "title", score: 5 },
+                    { col: "description", score: 4 },
+                    //{ col: "cert_user_id", score: 3, usingJson: true }, // 0list puts this in keyvalue instead of json table for some reason
+                    //{ col: "directory", score: 2, usingJson: true },
+                    { col: "date_added", score: 1 }
+				];
+
+				var searchSelects_ZeroExchange = [
+					{ col: "title", score: 5 },
+					{ col: "tags", score: 4 },
+					{ col: "body", score: 3 },
+					{ col: "date_added", score: 1 }
+				];
+
+
+				if (this.searchQuery && this.searchQuery[this.searchQuery.length - 1] == "?" || this.searchQuery.startsWith("how") || this.searchQuery.startsWith("where") || this.searchQuery.startsWith("what") || this.searchQuery.startsWith("when") || this.searchQuery.startsWith("could") || this.searchQuery.startsWith("who") || this.searchQuery.startsWith("where") || this.searchQuery.startsWith("why")) {
+					query = searchDbQuery(this, this.searchQuery || "", {
+						orderByScore: true,
+						id_col: "question_id",
+						select: "*",
+						searchSelects: searchSelects_ZeroExchange,
+						table: "questions",
+						join: "LEFT JOIN json USING (json_id)",
+						//where: languageWhere,
+						page: 0,
+						afterOrderBy: "date_added DESC",
+						limit: 1
+					});
+
+					page.cmd("as", ["1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", "dbQuery", [query]], function(results) {
+						self.zeroExchangeResults = results;
+					});
+				} else if (this.searchQuery && this.searchQuery != "") {
+					query = searchDbQuery(this, this.searchQuery || "", {
+						orderByScore: true,
+						id_col: "address",
+						select: "*",
+						searchSelects: searchSelects_GitCenter,
+						table: "repo_index",
+						join: "LEFT JOIN json USING (json_id)",
+						//where: languageWhere,
+						page: 0,
+						afterOrderBy: "date_added ASC",
+						limit: 1
+					});
+
+					page.cmd("as", ["1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", "dbQuery", [query]], function(results) {
+						self.gitCenterResults = results;
+					});
+				}
 
 				//return this.cmdp("as", )
 				//return this.cmdp("dbQuery", [query]);

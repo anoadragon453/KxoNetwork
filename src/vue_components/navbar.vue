@@ -1,6 +1,6 @@
 <template>
 	<v-toolbar app dark style="padding-right: 45px; padding-left: 45px;">
-		<v-toolbar-title style="cursor: pointer;" @click.prevent="goto('')">{{ ZiteName }}</v-toolbar-title>
+		<v-toolbar-title style="cursor: pointer;" @click.prevent="goto('')">{{ ZiteName }} (beta)</v-toolbar-title>
 		<v-spacer></v-spacer>
 		<v-menu left offset-y dark>
 			<v-btn icon slot="activator">
@@ -14,11 +14,14 @@
 		    	<v-list-tile @click="gotoLink('/1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E')">
 		    		<v-list-tile-title>KxoZites</v-list-tile-title>
 		    	</v-list-tile>
-		    	<v-list-tile @click="">
+		    	<!--<v-list-tile @click="">
 		    		<v-list-tile-title>KxoSoftware</v-list-tile-title>
-		    	</v-list-tile>
+		    	</v-list-tile>-->
 		    	<v-list-tile @click="gotoLink('/ZeroMedium.bit')">
 		    		<v-list-tile-title>ZeroMedium</v-list-tile-title>
+		    	</v-list-tile>
+		    	<v-list-tile @click="gotoLink('/ZeroExchange.bit')">
+		    		<v-list-tile-title>ZeroExchange</v-list-tile-title>
 		    	</v-list-tile>
 		    	<v-divider></v-divider>
 		    	<v-subheader>Partner Zites</v-subheader>
