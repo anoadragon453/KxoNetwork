@@ -22,8 +22,8 @@ var searchDbQuery = require("./libs/search.js");
 
 var Vue = require("vue/dist/vue.min.js");
 
-var VueZeroFrameRouter = require("./libs/vue-zeroframe-router.js");
 var Vuetify = require("vuetify");
+var VueZeroFrameRouter = require("./libs/vue-zeroframe-router.js");
 
 //var { sanitizeStringForUrl, sanitizeStringForUrl_SQL, html_substr, sanitizeHtmlForDb } = require("./util.js");
 

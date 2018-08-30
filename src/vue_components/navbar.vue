@@ -8,16 +8,16 @@
 		    </v-btn>
 		    <v-list>
 		    	<v-subheader>Network Zites</v-subheader>
-		    	<v-list-tile @click="">
+		    	<!--<v-list-tile @click="">
 		    		<v-list-tile-title>KxoMail</v-list-tile-title>
-		    	</v-list-tile>
-		    	<v-list-tile @click="">
+		    	</v-list-tile>-->
+		    	<v-list-tile @click="gotoLink('/1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E')">
 		    		<v-list-tile-title>KxoZites</v-list-tile-title>
 		    	</v-list-tile>
 		    	<v-list-tile @click="">
 		    		<v-list-tile-title>KxoSoftware</v-list-tile-title>
 		    	</v-list-tile>
-		    	<v-list-tile @click="">
+		    	<v-list-tile @click="gotoLink('/ZeroMedium.bit')">
 		    		<v-list-tile-title>ZeroMedium</v-list-tile-title>
 		    	</v-list-tile>
 		    	<v-divider></v-divider>
@@ -74,6 +74,9 @@
 			login: function() {
 				page.selectUser();
 				return false;
+			},
+			gotoLink: function(to) {
+				window.location = to;
 			}
 		}
 	}
