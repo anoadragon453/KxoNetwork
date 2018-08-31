@@ -34,6 +34,20 @@
 			"address": "1JgMGpq1CFxazKd7wn1D58M33YKbAiXam8",
 			"signature": "GycuG75ZqKrtl1hOF9jaJMGytuGQbk3Vu4HSLCEkGOzjXf1WhO3KvppEn2nfv66/ABodKpzgJSHos2zw58hgfRc=",
 			"date_added": 1528100674919
+		},
+		{
+			"id": 1535633233989,
+			"username": "styromaniac",
+			"address": "1PxcegJ1mKoMHeS73f9MvXeUWDq8BdnSv3",
+			"signature": "HJx2Bd9DgoX4srYV+yGPtNpg5pcuMpPI8uIvgW3jFF+CThNeQpTLEKrQxOhXmtOQjw19oRLFldu+n+M1PUsR4JM=",
+			"date_added": 1535633233989
+		},
+		{
+			"id": 1535663742912,
+			"username": "glightstar",
+			"address": "13gLzc36ahoxRTDtnmBRMyLgJQCirrTFbA",
+			"signature": "GybCDY8+DwqDG4Vt5RTLULOCiLu0IUZI+m3aRui2YslmB/Dkxf4KSBv/qV9/uLRBHQkhcTgfSpqVGNoy1p4F/VA=",
+			"date_added": 1535663742912
 		}
 	]
 }
