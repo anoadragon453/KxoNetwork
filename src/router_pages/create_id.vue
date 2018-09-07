@@ -86,7 +86,23 @@
 									} break;
 									case 'NotUnique':
 									{
-										self.error = "That username is already taken or there is already a user with that public address.";
+										console.log(page.siteInfo.auth_address);
+										// Check if already is db
+										page.cmd("dbQuery", ["SELECT * FROM ids WHERE address='" + page.siteInfo.auth_address + "'"], (results) => {
+											if (results.length > 0) {
+												page.cmdp("certAdd", [certname, "web", results[0].username, results[0].signature])
+													.then((res) => {
+														if (res.error) {
+															page.cmdp("wrapperNotification", ["error", "Failed to create account: " + res.error]);
+														} else {
+															page.cmdp("certSelect", [[certname]]);
+														}
+													});
+											} else {
+												self.error = "That username is already taken or you have already signed up on this client.";
+											}
+										});
+										//self.error = "That username is already taken or you have already signed up on this client.";
 									} break;
 									default:
 									{

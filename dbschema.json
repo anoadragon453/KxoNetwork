@@ -5,6 +5,13 @@
     "maps": {
         "ids.json": {
             "to_table": ["ids"]
+        },
+        "users/.+/data.json": {
+            "to_table": ["plugins"]
+        },
+        "users/.+/content.json": {
+            "to_json_table": ["cert_user_id"],
+            "file_name": "data.json"
         }
     },
     "tables": {
@@ -16,7 +23,7 @@
                 ["cert_user_id", "TEXT"]
             ],
             "indexes": ["CREATE UNIQUE INDEX path ON json(directory, file_name)"],
-            "schema_changed": 2
+            "schema_changed": 3
         },
         "ids": {
             "cols": [
@@ -24,10 +31,25 @@
                 ["address", "TEXT"],
                 ["username", "TEXT"],
                 ["signature", "TEXT"],
+                ["date_added", "TEXT"],
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX id_key ON ids (json_id, id)"],
-            "schema_changed": 5
+            "schema_changed": 9
+        },
+        "plugins": {
+            "cols": [
+                ["id", "INTEGER"],
+                ["name", "TEXT"],
+                ["description", "TEXT"],
+                ["gitcenteraddress", "TEXT"],
+                ["file_download_url", "TEXT"],
+                ["date_updated", "TEXT"],
+                ["date_added", "TEXT"],
+                ["json_id", "INTEGER REFERENCES json (json_id)"]
+            ],
+            "indexes": ["CREATE UNIQUE INDEX plugin_key ON plugins (json_id, id)"],
+            "schema_changed": 9
         }
     }
 }

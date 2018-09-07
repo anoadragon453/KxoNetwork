@@ -16,6 +16,11 @@ md = new MarkdownIt({
 	linkify: true
 });*/
 
+jdenticon = require("jdenticon");
+jdenticon.config = {
+	replaceMode: "observe"
+};
+
 var ZeroFrame = require("./libs/ZeroFrame.js");
 var Router = require("./libs/router.js");
 var searchDbQuery = require("./libs/search.js");
@@ -184,6 +189,80 @@ class ZeroApp extends ZeroFrame {
         return page.cmdp("wrapperNotification", ["info", "Unimplemented!"]);
 	}
 
+	checkOptional(doSignPublish, f) {
+        if (!app.userInfo || !app.userInfo.cert_user_id) {
+            this.cmd("wrapperNotification", ["info", "Please login first."]);
+            //page.selectUser(); // TODO: Check if user has data, if not, show the registration modal.
+            return;
+        }
+
+        var data_inner_path = "data/users/" + page.siteInfo.auth_address + "/data.json";
+        var content_inner_path = "data/users/" + page.siteInfo.auth_address + "/content.json";
+
+        // Verify that user has correct "optional" and "ignore" values
+        page.cmd("fileGet", { "inner_path": content_inner_path, "required": false }, (data) => {
+            if (!data) data = {};
+            else data = JSON.parse(data);
+
+            var curoptional = ".+\\.(zip)(.piecemap.msgpack)?";
+            var changed = false;
+            if (!data.hasOwnProperty("optional") || data.optional !== curoptional){
+                data["optional"] = curoptional
+                changed = true;
+            }
+
+            var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, "\t")));
+
+            if (changed) {
+                // Write (and Sign and Publish is doSignPublish)
+                page.cmd("fileWrite", [content_inner_path, btoa(json_raw)], (res) => {
+                    if (res === "ok") {
+                        if (f != null && typeof f === "function") f();
+                        if (doSignPublish) {
+                            page.cmd("siteSign", { "inner_path": content_inner_path }, () => {
+                                page.cmd("sitePublish", { "inner_path": content_inner_path, "sign": false });
+                            });
+                        }
+                    } else {
+                        page.cmd("wrapperNotification", ["error", "File write error: " + JSON.stringify(res)]);
+                    }
+                });
+            } else {
+                if (f != null && typeof f === "function") f();
+            }
+        });
+    }
+
+	uploadBigFile(file, f = null) {
+		var date_added = Date.now();
+        var orig_filename_list = file.name.split(".");
+        var filename = orig_filename_list[0].replace(/\s/g, "_").replace(/[^\x00-\x7F]/g, "").replace(/\'/g, "").replace(/\"/g, "") + "-" + date_added + "." + orig_filename_list[orig_filename_list.length - 1];
+
+        var f_path = "data/users/" + page.siteInfo.auth_address + "/" + filename;
+
+        page.checkOptional(false, () => {
+            page.cmd("bigfileUploadInit", [f_path, file.size], (init_res) => {
+                var formdata = new FormData();
+                formdata.append(file.name, file);
+
+                var req = new XMLHttpRequest();
+
+                req.upload.addEventListener("progress", console.log);
+                req.upload.addEventListener("loadend", () => {
+					console.log("Loadend");
+					// Pin file so it is excluded from the automatized optional file cleanup
+					page.cmd("optionalFilePin", { "inner_path": f_path });
+					
+                    page.cmd("wrapperNotification", ["info", "Upload finished!"]);
+                    if (f !== null && typeof f === "function") f(f_path);
+                });
+                req.withCredentials = true;
+                req.open("POST", init_res.url);
+                req.send(formdata);
+            });
+        });
+	}
+
 	/*getZitesSearch() {
 		
 	}*/
@@ -193,8 +272,16 @@ page = new ZeroApp();
 
 var Home = require("./router_pages/home.vue");
 var CreateId = require("./router_pages/create_id.vue");
+var Profile = require("./router_pages/profile.vue");
+var Plugins = require("./router_pages/plugins.vue");
+var UploadPlugin = require("./router_pages/upload_plugin.vue");
+var Plugin = require("./router_pages/plugin.vue");
 
 VueZeroFrameRouter.VueZeroFrameRouter_Init(Router, app, [
+	{ route: "plugin/:username/:id", component: Plugin },
+	{ route: "plugins/upload", component: UploadPlugin },
+	{ route: "plugins", component: Plugins },
+	{ route: "profile", component: Profile },
 	{ route: "create-id", component: CreateId },
 	{ route: "", component: Home }
 ]);

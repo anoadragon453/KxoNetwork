@@ -36,6 +36,7 @@
     "watchify": "^3.11.0"
   },
   "dependencies": {
+    "jdenticon": "^2.1.0",
     "moment": "^2.21.0",
     "node-sass": "^4.8.1",
     "sanitize-html": "^1.16.3",

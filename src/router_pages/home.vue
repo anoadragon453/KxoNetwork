@@ -10,47 +10,73 @@
 		<v-container style="max-width: 900px;"> <!-- Search -->
 			<v-card style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 				<v-toolbar color="white" dense prominent extended flat>
-					<v-text-field prepend-icon="search" hide-details single-line clearable placeholder="Total Search" style="margin-right: 5px; margin-left: 3px;" v-model="searchQuery" @keyup.enter="getResults()" @blur="getResults()"></v-text-field>
+					<v-text-field prepend-icon="search" hide-details single-line clearable v-bind:placeholder="'Search ' + currentTab" style="margin-right: 5px; margin-left: 3px;" v-model="searchQuery" @keyup.enter="getResults()" @blur="getResults()"></v-text-field>
 					<v-tabs slot="extension" centered>
-						<v-tab>Zites</v-tab>
+						<v-tab @click="changeTab('zites')">Zites</v-tab>
+						<v-tab @click="changeTab('kxoids')">KxoIds</v-tab>
 						<v-tab>Audio</v-tab>
 						<v-tab>Video</v-tab>
 						<v-tab>Posts</v-tab>
 						<v-tab>Files</v-tab>
-						<v-tab>KxoIds</v-tab>
 					</v-tabs>
 				</v-toolbar>
 			</v-card>
 
-			<div style="margin-left: 15px; margin-right: 15px; margin-top: 8px;">Time: {{ searchTime / 1000.0 }} seconds</div>
+			<div v-if="currentTab == 'zites'">
+				<div style="margin-left: 15px; margin-right: 15px; margin-top: 8px;">Time: {{ searchTime / 1000.0 }} seconds</div>
 
-			<v-container style="max-width: 50%; float: left;">
-				<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
-					<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
-					<div style="text-align: center;"><small>{{ result.address || getLinkFromBody(result) }}</small></div>
-				</v-card>
-			</v-container>
-			<v-container style="max-width: 50%; float: right;">
-				<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
-					<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
-					<div style="text-align: center;"><small>{{ result.address || getLinkFromBody(result) }}</small></div>
-				</v-card>
-			</v-container>
-			<div style="clear: both;"></div>
-			
-			<v-container v-if="gitCenterResults.length > 0">
-				<v-card v-for="result in gitCenterResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + result.address || '#')">
-					<div style="text-align: center;"><strong style="color: blue;">Git Center: {{ result.title }}</strong></div>
-					<div style="margin-bottom: 5px; text-align: center;">{{ result.description.slice(0, 150) }}</div>
-					<div style="text-align: center;"><small>{{ result.address }}</small></div>
-				</v-card>
-			</v-container>
-			<v-container v-if="zeroExchangeResults.length > 0">
-				<v-card v-for="result in zeroExchangeResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/ZeroExchange.bit/?/' + result.site + '/' + result.directory.replace(/data\/users\//, '') + '/' + result.date_added || '#')">
-					<div style="text-align: center;"><strong style="color: blue;">ZeroExchange: {{ result.title }}</strong></div>
-					<div style="margin-bottom: 5px; text-align: center;">{{ result.body.slice(0, 150) }}</div>
-				</v-card>
-			</v-container>
+				<v-container style="max-width: 50%; float: left;">
+					<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+						<div style="text-align: center;"><small>{{ (result.zite == "ZeroTalk" ? "ZeroTalk: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>
+					</v-card>
+				</v-container>
+				<v-container style="max-width: 50%; float: right;">
+					<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+						<div style="text-align: center;"><small>{{ (result.zite == "ZeroTalk" ? "ZeroTalk: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>
+					</v-card>
+				</v-container>
+				<div style="clear: both;"></div>
+				
+				<v-container v-if="gitCenterResults.length > 0">
+					<v-card v-for="result in gitCenterResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + result.address || '#')">
+						<div style="text-align: center;"><strong style="color: blue;">Git Center: {{ result.title }}</strong></div>
+						<div style="margin-bottom: 5px; text-align: center;">{{ result.description.slice(0, 150) }}</div>
+						<div style="text-align: center;"><small>{{ result.address }}</small></div>
+					</v-card>
+				</v-container>
+				<v-container v-if="zeroExchangeResults.length > 0">
+					<v-card v-for="result in zeroExchangeResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/ZeroExchange.bit/?/' + result.site + '/' + result.directory.replace(/data\/users\//, '') + '/' + result.date_added || '#')">
+						<div style="text-align: center;"><strong style="color: blue;">ZeroExchange: {{ result.title }}</strong></div>
+						<div style="margin-bottom: 5px; text-align: center;">{{ result.body.slice(0, 150) }}</div>
+					</v-card>
+				</v-container>
+			</div>
+
+			<div v-if="currentTab == 'kxoids'">
+				<v-container style="max-width: 50%; float: left;">
+					<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="">
+						<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
+						<div style="float: right; width: calc(100% - 50px);">
+							<div><strong style="color: blue;">{{ result.username }}</strong></div>
+							<div><small>{{ result.address }}</small></div>
+						</div>
+						<div style="clear: both;"></div>
+					</v-card>
+				</v-container>
+				<v-container style="max-width: 50%; float: right;">
+					<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="">
+						<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
+						<div style="float: right; width: calc(100% - 50px);">
+							<div><strong style="color: blue;">{{ result.username }}</strong></div>
+							<div><small>{{ result.address }}</small></div>
+						</div>
+						<div style="clear: both;"></div>
+					</v-card>
+				</v-container>
+				<div style="clear: both;"></div>
+			</div>
 
 			<v-btn style="margin-top: 16px; float: left;" @click="prevPage()">&lt;</v-btn>
 			<v-btn style="margin-top: 16px; float: right;" @click="nextPage()">&gt;</v-btn>
@@ -80,6 +106,8 @@
 				pageNum: 0,
 				limit: 8,
 				searchTime: 0, // In miliseconds
+				totalResults: 4,
+				currentResults: 0,
 			};
 		},
 		beforeMount: function() {
@@ -213,6 +241,27 @@
 
             	console.log(pageNum);
             	var self = this;
+
+            	if (this.currentTab == "kxoids") {
+            		var searchSelects_KxoIds = [
+            			{ col: "username", score: 5 },
+            			{ col: "address", score: 4 }
+            		];
+
+            		var query = searchDbQuery(this, this.searchQuery || "", {
+            			orderByScore: true,
+            			id_col: "id",
+            			select: "*",
+            			searchSelects: searchSelects_KxoIds,
+            			table: "ids",
+            			page: pageNum,
+            			//afterOrderBy: "date_added ASC",
+            			limit: this.limit
+            		});
+
+            		this.doSearchQuery("KxoId", "self", searchSelects_KxoIds, query, setNextResults, subPageNum);
+            		return;
+            	}
 
 				var searchSelects_KxoZites = [
 					{ col: "title", score: 5 },
@@ -374,7 +423,10 @@
             doSearchQuery: function(ziteName, address, searchSelects, query, setNextResults, subPageNum) {
             	var self = this;
             	var startTime = new Date();
-				page.cmd("as", [address, "dbQuery", [query]], function(results) {
+
+            	var addResults = (results) => {
+					console.log(results);
+            		self.currentResults++;
 					// Add stuff to each result, including zite name and scoreNum
 					for (var i = 0; i < results.length; i++) {
 						results[i].zite = ziteName;
@@ -394,9 +446,17 @@
 						results[i].scoreNum = scoreNum;
 
 						if (ziteName == "ZeroTalk") {
-							console.log(results[i]);
+							//console.log(results[i]);
 							results[i].address = address + "/?Topic:" + results[i].row_topic_uri;
 						}
+
+						if (results[i].address && results[i].address.startsWith('/')) {
+							results[i].address = results[i].substring(1);
+						}
+
+						/*if (results[i].address) {
+							results[i].address = results[i].address.replace(/)
+						}*/
 						/*results[i].address = "";
 						if (ziteName == "KxoNetwork")
 							results[i].address = results[i].address;
@@ -409,23 +469,59 @@
 
 					if (subPageNum == 0) {
 						if (!setNextResults){
-							totalResults = totalResults.concat(results.slice(0, 4));
-							totalNextResults = totalNextResults.concat(results.slice(4));
+							totalResults = totalResults.concat(results.slice(0, self.limit / 2));
+							totalNextResults = totalNextResults.concat(results.slice(self.limit / 2));
 						}
-						else if (setNextResults) totalNextResults = totalNextResults.concat(results.slice(0, 4));
+						else if (setNextResults) totalNextResults = totalNextResults.concat(results.slice(0, self.limit / 2));
 					}
 					else {
 						if (!setNextResults) {
-							totalResults = totalResults.concat(results.slice(4));
-							totalPrevResults = totalPrevResults.concat(results.slice(0, 4));
+							totalResults = totalResults.concat(results.slice(self.limit / 2));
+							totalPrevResults = totalPrevResults.concat(results.slice(0, self.limit / 2));
 						}
-						else if (setNextResults) totalNextResults = totalNextResults.concat(results.slice(4));
+						else if (setNextResults) totalNextResults = totalNextResults.concat(results.slice(self.limit / 2));
 					}
 
+					// Remove duplicates
+					var hashtable = {};
+					var totalResults2 = [];
+					var totalNextResults2 = [];
+					var totalPrevResults2 = [];
+					for (var i = 0; i < totalResults.length; i++) {
+						if (!hashtable[totalResults[i].address]) {
+							totalResults2.push(totalResults[i]);
+							hashtable[totalResults[i].address] = 1;
+						}
+					}
+					for (var i = 0; i < totalPrevResults.length; i++) {
+						if (!hashtable[totalPrevResults[i].address]) {
+							totalPrevResults2.push(totalPrevResults[i]);
+							hashtable[totalPrevResults[i].address] = 1;
+						}
+					}
+					for (var i = 0; i < totalNextResults.length; i++) {
+						if (!hashtable[totalNextResults[i].address]) {
+							totalNextResults2.push(totalNextResults[i]);
+							hashtable[totalNextResults[i].address] = 1;
+						}
+					}
+
+					totalResults = totalResults2;
+					totalNextResults = totalNextResults2;
+					totalPrevResults = totalPrevResults2;
+
 					// Resort
-					self.results = totalResults.sort((a, b) => {
-						return a.sortNum < b.sortNum;
-					});
+					//if (self.currentResults == self.totalResults) {
+						self.results = totalResults.sort((a, b) => {
+							return a.sortNum < b.sortNum;
+						});
+						self.nextResults = totalNextResults.sort((a, b) => {
+							return a.sortNum < b.sortNum;
+						});
+						self.prevResults = totalPrevResults.sort((a, b) => {
+							return a.sortNum < b.sortNum;
+						});
+					//}
 
 					if (!setNextResults) {
 						if (self.searchTime == 0) {
@@ -436,7 +532,13 @@
 							self.searchTime += Math.abs(date - startTime);
 						}
 					}
-				});
+            	};
+
+            	if (address != "self") {
+					page.cmd("as", [address, "dbQuery", [query]], addResults);
+				} else {
+					page.cmd("dbQuery", [query], addResults);
+				}
             },
 			goto: function(to) {
 				Router.navigate(to);
@@ -460,12 +562,25 @@
 			},
 			getLinkFromBody: function(result) {
 				var body = result.body;
+				if (!body) return "#";
 				var matches = body.match(/https?\:\/\/127\.0\.0\.1\:43110\/[A-Za-z0-9\.]+/);
                 //console.log(matches);
                 if (matches) {
                     return "/" + matches[0].replace(/https?\:\/\//g, "").replace(/127\.0\.0\.1/g, "").replace(/\:43110\/?/g, "").replace(/\//g, "");
                 }
                 return "#";
+			},
+			changeTab: function(tabName) {
+				this.currentTab = tabName;
+
+				if (tabName == "kxoids") {
+					this.limit = 24;
+				} else {
+					this.limit = 8;
+				}
+
+				this.previousSearchQuery = null;
+				this.getResults();
 			}
 		}
 	}
