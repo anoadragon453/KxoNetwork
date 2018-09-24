@@ -2,18 +2,18 @@
 	<v-container fluid>
 		<v-container style="max-width: 700px;">
 			<div style="display: block; margin-bottom: 10px;"><strong style="font-size: 1.2em;">Plugins Store</strong><a v-if="userInfo" style="float: right;" @click.prevent="goto('plugins/upload')">Upload Plugin</a></div>
-			<div style="float: left; width: 50%;">
-				<v-card v-for="plugin in plugins.slice(Math.round(plugins.length - 1))" :key="plugin.id" style="padding: 10px; margin-top: 8px;">
+			<div style="float: left; max-width: calc(50% - 5px);">
+				<v-card v-for="plugin in plugins.slice(0, Math.round(plugins.length / 2))" :key="plugin.id" style="padding: 10px; margin-top: 8px;">
 					<strong style="color: blue; cursor: pointer;" @click="goto('plugin/' + plugin.cert_user_id.replace(/@kxoid.bit/, '') + '/' + plugin.id)">{{ plugin.name }}</strong>
 					<div>{{ plugin.description }}</div>
-					<div><a @click="downloadPlugin(plugin)">Download</a></div>
+					<div><a @click="downloadPlugin(plugin)">Download Latest</a></div>
 				</v-card>
 			</div>
-			<div style="float: right; width: 50%;">
-				<v-card v-for="plugin in plugins.slice(0, Math.round(plugins.length - 1))" :key="plugin.id" style="padding: 10px; margin-top: 8px;">
+			<div style="float: right; max-width: calc(50% - 5px);">
+				<v-card v-for="plugin in plugins.slice(Math.round(plugins.length / 2))" :key="plugin.id" style="padding: 10px; margin-top: 8px;">
 					<strong style="color: blue; cursor: pointer;" @click="goto('plugin/' + plugin.cert_user_id.replace(/@kxoid.bit/, '') + '/' + plugin.id)">{{ plugin.name }}</strong>
 					<div>{{ plugin.description }}</div>
-					<div><a @click="downloadPlugin(plugin)">Download</a></div>
+					<div><a @click="downloadPlugin(plugin)">Download Latest</a></div>
 				</v-card>
 			</div>
 		</v-container>
@@ -116,7 +116,7 @@
 			getPlugins: function() {
 				var self = this;
 
-				var query = `SELECT * FROM plugins LEFT JOIN json USING (json_id)`;
+				var query = `SELECT * FROM plugins LEFT JOIN json USING (json_id) LEFT JOIN plugin_versions ON plugins.default_version_id = plugin_versions.id`;
 
 				page.cmd("dbQuery", [query], function(results) {
 					self.plugins = results;

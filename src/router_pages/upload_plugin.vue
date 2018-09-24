@@ -26,10 +26,19 @@
 						value=""
 						single-line
 						v-model="gitcenteraddress"
-						required
 					></v-text-field>
 
-					<input class="file-input" type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" id="fileUpload" v-on:change="uploadFile()">
+					<strong>Initial Version</strong><br><br>
+
+					<input class="file-input" type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" id="fileUpload" v-on:change="uploadFile()"><br>
+					<v-text-field name="version"
+						label="Version String"
+						value=""
+						single-line
+						v-model="version"
+						required
+					></v-text-field>
+					<v-checkbox name="prerelease" label="Pre-release?" v-model="prerelease"></v-checkbox>
 					
 					<v-btn color="success" :loading="loading" @click="upload()">Upload</v-btn>
 				</v-card-text>
@@ -75,6 +84,8 @@
 				name: "",
 				description: "",
 				gitcenteraddress: "",
+				version: "",
+				prerelease: false,
 				loading: false
 			};
 		},
@@ -184,6 +195,9 @@
 					return;
 				}
 
+				if (files.length > 0)
+					self.loading = true;
+
 				for (let fX in files) {
 					let fY = files[fX];
 
@@ -220,6 +234,7 @@
 					}
 
 					if (!data["plugins"]) data["plugins"] = [];
+					if (!data["plugin_versions"]) data["plugin_versions"] = [];
 
 					var date_added = Date.now();
 
@@ -228,7 +243,16 @@
 						"name": self.name,
 						"description": self.description,
 						"gitcenteraddress": self.gitcenteraddress,
+						"default_version_id": date_added,
+						"date_added": date_added
+					});
+
+					data["plugin_versions"].push({
+						"id": date_added,
+						"plugin_id": date_added,
+						"version": self.version,
 						"file_download_url": output_url,
+						"prerelease": self.prerelease,
 						"date_added": date_added
 					});
 
@@ -236,6 +260,8 @@
 
 					page.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
 						if (res === "ok") {
+							self.loading = false;
+
 							page.cmd("siteSign", { "inner_path": content_inner_path }, (res) => {
 								if (res === "ok") {
 									Router.navigate("plugins");

@@ -22,7 +22,7 @@
 				</v-toolbar>
 			</v-card>
 
-			<div v-if="currentTab == 'zites'">
+			<div v-if="currentTab == 'zites' && searchQuery != ''">
 				<div style="margin-left: 15px; margin-right: 15px; margin-top: 8px;">Time: {{ searchTime / 1000.0 }} seconds</div>
 
 				<v-container style="max-width: 50%; float: left;">
@@ -52,6 +52,25 @@
 						<div style="margin-bottom: 5px; text-align: center;">{{ result.body.slice(0, 150) }}</div>
 					</v-card>
 				</v-container>
+			</div>
+
+			<!-- Featured Zites -->
+			<div v-if="currentTab == 'zites' && searchQuery == ''">
+				<div style="margin-left: 15px; margin-right: 15px; margin-top: 8px;">Featured Zites</div>
+
+				<v-container style="max-width: 50%; float: left;">
+					<v-card v-for="result in featured.slice(0, Math.round(featured.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+						<div style="text-align: center;"><small>{{ (result.address || getLinkFromBody(result)) }}</small></div>
+					</v-card>
+				</v-container>
+				<v-container style="max-width: 50%; float: right;">
+					<v-card v-for="result in featured.slice(Math.round(featured.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+						<div style="text-align: center;"><small>{{ (result.address || getLinkFromBody(result)) }}</small></div>
+					</v-card>
+				</v-container>
+				<div style="clear: both;"></div>
 			</div>
 
 			<div v-if="currentTab == 'kxoids'">
@@ -104,10 +123,24 @@
 				searchQuery: "",
 				previousSearchQuery: null,
 				pageNum: 0,
-				limit: 8,
+				limit: 4,
 				searchTime: 0, // In miliseconds
 				totalResults: 4,
 				currentResults: 0,
+				featured: [
+					{ title: "0Play Game Center", address: "1Ag6xidDHiPgWoDKhfSx4xFQr6WC3NqxZg" },
+					{ title: "ZeroExchange", address: "ZeroExchange.bit" },
+					{ title: "Git Center", address: "1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t" },
+					{ title: "Horizon", address: "1CjMsvhJ2JsV4B5qo3FDHnF3mvRCcHuxBn" },
+					{ title: "ZPlace", address: "1D6f2CvDRhPeEeBAcmqGt3X9z2CkLpmv2V" },
+					{ title: "ThunderWave", address: "thunderwave.bit" },
+					{ title: "Kiwipedia", address: "1KiwiBCVBUcuypVm8FEmUW9YT6fJDXkN9r" },
+					{ title: "Zirch", address: "1SearchPd3khzLtsxTxKYhYUohk7c1QYd" },
+					{ title: "NullPaste", address: "1MgHVPCE1ve6QfKrgsqCURzRj72HrRWioz" },
+					{ title: "Sakana", address: "sakana.bit" },
+					{ title: "ZeroMedium", address: "ZeroMedium.bit" },
+					{ title: "Nopelist", address: "Styromaniac.blocklist.bit" },
+				]
 			};
 		},
 		beforeMount: function() {
@@ -234,10 +267,10 @@
             		pageNum = 0;
             	}
 
-            	if (pageNum % 2 == 1) {
+            	/*if (pageNum % 2 == 1) {
             		subPageNum = 1;
             		pageNum--;
-            	}
+            	}*/
 
             	console.log(pageNum);
             	var self = this;
@@ -323,7 +356,7 @@
                     { col: "added", score: 1 }
 				];
 
-				query = searchDbQuery(this, this.searchQuery || "", {
+				/*query = searchDbQuery(this, this.searchQuery || "", {
 					orderByScore: true,
 					id_col: "topic_id",
 					select: "*",
@@ -335,7 +368,7 @@
 					afterOrderBy: "added DESC",
 					limit: this.limit
 				});
-				this.doSearchQuery("0List", "186THqMWuptrZxq1rxzpguAivK3Bs6z84o", searchSelects_0List, query, setNextResults, subPageNum);
+				this.doSearchQuery("0List", "186THqMWuptrZxq1rxzpguAivK3Bs6z84o", searchSelects_0List, query, setNextResults, subPageNum);*/
 
 				var searchSelects_ZeroTalk = [
 					{ col: "title", score: 5 },
@@ -416,22 +449,20 @@
 						self.gitCenterResults = results;
 					});
 				}
-
-				//return this.cmdp("as", )
-				//return this.cmdp("dbQuery", [query]);
             },
             doSearchQuery: function(ziteName, address, searchSelects, query, setNextResults, subPageNum) {
             	var self = this;
-            	var startTime = new Date();
+				var startTime = new Date();
+				var startTab = this.currentTab;
 
             	var addResults = (results) => {
-					console.log(results);
+					//console.log(results);
             		self.currentResults++;
 					// Add stuff to each result, including zite name and scoreNum
 					for (var i = 0; i < results.length; i++) {
 						results[i].zite = ziteName;
 
-						var scoreNum = 0;
+						/*var scoreNum = 0;
 						var keys = Object.keys(results[i]);
 						for (var j = 0; j < keys.length; j++) {
 							if (keys[j].includes("match")) {
@@ -443,7 +474,7 @@
 							}
 						}
 
-						results[i].scoreNum = scoreNum;
+						results[i].scoreNum = scoreNum;*/
 
 						if (ziteName == "ZeroTalk") {
 							//console.log(results[i]);
@@ -463,37 +494,41 @@
 						*/
 					}
 
-					var totalResults = self.results.slice();
-					var totalNextResults = self.nextResults.slice();
-					var totalPrevResults = self.prevResults.slice();
+					//var totalResults = self.results.slice();
+					//var totalNextResults = self.nextResults.slice();
+					//var totalPrevResults = self.prevResults.slice();
 
-					if (subPageNum == 0) {
+					//if (subPageNum == 0) {
 						if (!setNextResults){
-							totalResults = totalResults.concat(results.slice(0, self.limit / 2));
-							totalNextResults = totalNextResults.concat(results.slice(self.limit / 2));
+							//totalResults = totalResults.concat(results);
+							if (self.currentTab == startTab)
+								self.results = self.results.concat(results);
+							//totalResults = totalResults.concat(results.slice(0, self.limit / 2));
+							//totalNextResults = totalNextResults.concat(results.slice(self.limit / 2));
 						}
-						else if (setNextResults) totalNextResults = totalNextResults.concat(results.slice(0, self.limit / 2));
-					}
+						//else if (setNextResults) totalNextResults = totalNextResults.concat(results.slice(0, self.limit / 2));
+					/*}
 					else {
 						if (!setNextResults) {
 							totalResults = totalResults.concat(results.slice(self.limit / 2));
-							totalPrevResults = totalPrevResults.concat(results.slice(0, self.limit / 2));
+							//totalPrevResults = totalPrevResults.concat(results.slice(0, self.limit / 2));
 						}
 						else if (setNextResults) totalNextResults = totalNextResults.concat(results.slice(self.limit / 2));
-					}
+					}*/
 
 					// Remove duplicates
-					var hashtable = {};
-					var totalResults2 = [];
-					var totalNextResults2 = [];
-					var totalPrevResults2 = [];
-					for (var i = 0; i < totalResults.length; i++) {
+					//var hashtable = {};
+					//var totalResults2 = [];
+					//var totalNextResults2 = [];
+					//var totalPrevResults2 = [];
+					/*for (var i = 0; i < totalResults.length; i++) {
 						if (!hashtable[totalResults[i].address]) {
 							totalResults2.push(totalResults[i]);
 							hashtable[totalResults[i].address] = 1;
 						}
-					}
-					for (var i = 0; i < totalPrevResults.length; i++) {
+					}*/
+					//totalResults2 = totalResults;
+					/*for (var i = 0; i < totalPrevResults.length; i++) {
 						if (!hashtable[totalPrevResults[i].address]) {
 							totalPrevResults2.push(totalPrevResults[i]);
 							hashtable[totalPrevResults[i].address] = 1;
@@ -504,23 +539,24 @@
 							totalNextResults2.push(totalNextResults[i]);
 							hashtable[totalNextResults[i].address] = 1;
 						}
-					}
+					}*/
 
-					totalResults = totalResults2;
-					totalNextResults = totalNextResults2;
-					totalPrevResults = totalPrevResults2;
+					//totalResults = totalResults2;
+					//totalNextResults = totalNextResults2;
+					//totalPrevResults = totalPrevResults2;
 
 					// Resort
 					//if (self.currentResults == self.totalResults) {
-						self.results = totalResults.sort((a, b) => {
+						//self.results = totalResults;
+						/*self.results = totalResults.sort((a, b) => {
 							return a.sortNum < b.sortNum;
-						});
-						self.nextResults = totalNextResults.sort((a, b) => {
+						});*/
+						/*self.nextResults = totalNextResults.sort((a, b) => {
 							return a.sortNum < b.sortNum;
 						});
 						self.prevResults = totalPrevResults.sort((a, b) => {
 							return a.sortNum < b.sortNum;
-						});
+						});*/
 					//}
 
 					if (!setNextResults) {
@@ -574,9 +610,9 @@
 				this.currentTab = tabName;
 
 				if (tabName == "kxoids") {
-					this.limit = 24;
+					this.limit = 12; // 24
 				} else {
-					this.limit = 8;
+					this.limit = 4; // 8
 				}
 
 				this.previousSearchQuery = null;

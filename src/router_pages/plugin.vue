@@ -3,8 +3,12 @@
 		<v-container style="max-width: 700px;" v-if="plugin">
 			<div style="display: block; margin-bottom: 10px;"><strong style="font-size: 1.2em;">Plugin: {{ plugin.name }}</strong><a v-if="userInfo && userInfo.cert_user_id == plugin.cert_user_id" style="float: right;" @click.prevent="">Edit Plugin</a></div>
 			<p>{{ plugin.description }}</p>
-			<a @click="downloadPlugin()">Download</a>
+			<div><a @click="downloadLatestVersion()">Download Latest</a> <span v-if="default_version_peers">({{ default_version_peers }} peers)</span></div>
 			<hr>
+			<v-card v-for="version in plugin_versions" :key="version.id" style="padding: 10px; margin-top: 10px;">
+				<div>Version {{ version.version }}</div>
+				<div><a @click="downloadVersion(version)">Download</a> <span v-if="version.peer">({{ version.peer }} peers)</span></div>
+			</v-card>
 			<!--<svg width="80" height="80" style="float: left; margin-bottom: 15px;" v-bind:data-jdenticon-value="userInfo.auth_address"></svg>
 			<div style="float: right; width: calc(100% - 90px); height: 80px; margin-bottom: 15px;">
 				<strong style="font-size: 1.2em;">{{ userInfo.cert_user_id.replace(/@kxoid.bit/, '') }}</strong>
@@ -40,7 +44,9 @@
 		name: "plugin",
 		data: () => {
 			return {
-				plugin: null
+				plugin: null,
+				plugin_versions: [],
+				default_version_peers: 0
 			};
 		},
 		beforeMount: function() {
@@ -127,11 +133,35 @@
 			getPlugin: function(username, id) {
 				var self = this;
 
-				var query = `SELECT * FROM plugins LEFT JOIN json USING (json_id) WHERE id=${id} AND cert_user_id='${username}@kxoid.bit' limit 1`;
+				var query = `SELECT plugins.*, json.cert_user_id, plugin_versions.file_download_url, plugin_versions.version FROM plugins LEFT JOIN json USING (json_id) LEFT JOIN plugin_versions ON plugins.default_version_id = plugin_versions.id WHERE plugins.id=${id} AND cert_user_id='${username}@kxoid.bit' limit 1`;
+
+				page.cmd("dbQuery", [query], function(results) {
+					//console.log(results);
+					self.plugin = results[0];
+					self.getDefaultVersionPeers();
+					self.getVersions(results[0].id, results[0].cert_user_id);
+				});
+			},
+			getVersions: function(plugin_id, plugin_cert_user_id) {
+				var self = this;
+
+				var query = `SELECT * FROM plugin_versions LEFT JOIN json USING (json_id) WHERE plugin_id=${plugin_id} AND cert_user_id='${plugin_cert_user_id}' ORDER BY date_added DESC`;
 
 				page.cmd("dbQuery", [query], function(results) {
 					console.log(results);
-					self.plugin = results[0];
+					self.plugin_versions = results;
+					self.plugin_versions.forEach(function(version, index) {
+						page.cmd("optionalFileInfo", [version.file_download_url], function(info) {
+							self.plugin_versions[index]["peer"] = info.peer;
+						});
+					});
+				});
+			},
+			getDefaultVersionPeers: function() {
+				var self = this;
+
+				page.cmd("optionalFileInfo", [self.plugin.file_download_url], function(info) {
+					self.default_version_peers = info.peer;
 				});
 			},
 			goto: function(to) {
@@ -145,8 +175,14 @@
 				console.log(to);
 				window.location = to;
 			},
-			downloadPlugin: function() {
+			downloadLatestVersion: function() {
+				/*console.log(this.plugin);
+				console.log(this.plugin.file_download_url);
+				console.log(this.plugin.version);*/
 				window.location = '/1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P/' + this.plugin.file_download_url;
+			},
+			downloadVersion: function(version) {
+				window.location = '/1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P/' + version.file_download_url;
 			}
 		}
 	}
