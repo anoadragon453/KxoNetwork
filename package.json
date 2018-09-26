@@ -30,7 +30,7 @@
     "gulp-util": "^3.0.8",
     "patch-package": "^4.0.0",
     "uglifyify": "^4.0.5",
-    "vinyl-buffer": "^1.0.0",
+    "vinyl-buffer": "^1.0.1",
     "vinyl-fs": "^3.0.3",
     "vinyl-source-stream": "^2.0.0",
     "vueify": "^9.4.1",
