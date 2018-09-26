@@ -63,4 +63,4 @@ gulp.task("watch", function() {
     gulp.watch(paths.pages, ["html"]);
 });
 
-gulp.task("default", ["scripts", "styles", "html"]);
+gulp.task("default", gulp.parallel("scripts", "styles", "html"));

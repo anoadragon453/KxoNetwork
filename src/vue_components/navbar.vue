@@ -35,9 +35,9 @@
 		    	<v-list-tile @click="gotoLink('/1Ag6xidDHiPgWoDKhfSx4xFQr6WC3NqxZg')">
 		    		<v-list-tile-title>0Play Game Center</v-list-tile-title>
 		    	</v-list-tile>
-		    	<v-list-tile @click="">
+		    	<!--<v-list-tile @click="">
 		    		<v-list-tile-title>ZeroNet Instant Messenger</v-list-tile-title>
-		    	</v-list-tile>
+		    	</v-list-tile>-->
 		    </v-list>
 		</v-menu>
 		<v-toolbar-items>
