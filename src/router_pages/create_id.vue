@@ -113,6 +113,8 @@
 								//page.cmdp("wrapperNotification", ["error", messageParts[1]]);
 								waitingForResponse = false;
 								self.loading = false;
+							} else {
+								page.cmd("peerValid", [message.params.hash]);
 							}
 					//	});
 				} else if (messageParams.message.startsWith('success|')) {
@@ -138,8 +140,12 @@
 								self.loading = false;
 								// Navigate to homepage
 								self.goto('');
+							} else {
+								page.cmd("peerValid", [message.params.hash]);
 							}
 					//	});
+				} else {
+					page.cmd("peerValid", [message.params.hash]);
 				}
 			},
 			goto: function(to) {

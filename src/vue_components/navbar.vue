@@ -43,10 +43,16 @@
 		<v-toolbar-items>
 			<v-btn flat v-if="!isLoggedIn" @click="login()">Sign In</v-btn>
 			<v-btn flat v-if="!isLoggedIn" @click="goto('create-id')">Register</v-btn>
-			<v-btn flat v-else @click="goto('profile')">
-				<svg style="height: 50%; width: auto; margin-top: auto; margin-bottom: auto; margin-right: 5px;" v-bind:data-jdenticon-value="userInfo.auth_address" v-if="isLoggedIn"></svg>
-				{{ userInfo.cert_user_id }}
-			</v-btn>
+			<v-menu flat v-else offset-y>
+				<v-btn slot="activator" flat>
+					<svg style="height: 50%; width: auto; margin-top: auto; margin-bottom: auto; margin-right: 5px;" v-bind:data-jdenticon-value="userInfo.auth_address" v-if="isLoggedIn"></svg>
+					{{ userInfo.cert_user_id }}
+				</v-btn>
+				<v-list>
+					<v-list-tile @click="goto('profile')"><v-list-tile-title>Profile</v-list-tile-title></v-list-tile>
+					<v-list-tile><v-list-tile-title>Settings</v-list-tile-title></v-list-tile>
+				</v-list>
+			</v-menu>
 		</v-toolbar-items>
 	</v-toolbar>
 </template>

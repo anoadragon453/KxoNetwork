@@ -116,10 +116,10 @@ var app = new Vue({
 				if (f !== null && typeof f === "function") f();
             });
 		},
-		importZite: function(zite) {
+		/*importZite: function(zite) {
 			this.ziteToImport = zite;
 			Router.navigate('import-zite');
-		},
+		},*/
 		setCallback: function(name, callback) {
 			console.log("Setting '" + name + "Callback' callback to ", callback);
 			this[name + "Callback"] = callback;
@@ -165,12 +165,14 @@ class ZeroApp extends ZeroFrame {
 			this.siteInfo = message.params;
 			app.siteInfo = message.params;
 			app.getUserInfo();
-		} else if (cmd === "peerReceive" && waitingForResponse) {
-			this.cmd("peerValid", [message.params.hash]);
-			app.callCallback("peerReceive", message.params);
-			/*if (app.peerReceiveCallback != null && typeof app.peerReceiveCallback == "function") {
-				app.peerReceiveCallback(message.params);
-			}*/
+		} else if (cmd === "peerReceive") {
+			if (waitingForResponse) {
+				// PeerValid is called in this callback only if
+				// this message wasn't directed to this client
+				app.callCallback("peerReceive", message.params);
+			} else {
+				this.cmd("peerValid", [message.params.hash]);
+			}
 		}
 
 		if (message.params.event && message.params.event[0] === "file_done") {
