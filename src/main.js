@@ -61,8 +61,9 @@ var app = new Vue({
 			console.log(this.siteInfo);
             if (this.siteInfo == null || this.siteInfo.cert_user_id == null) {
                 this.userInfo = null;
-				this.$emit("setuserinfo", this.userInfo);
-				this.$emit("update");
+				//this.$emit("setuserinfo", this.userInfo);
+				//this.$emit("update");
+				app.callCallback("update", this.userInfo);
                 return;
             }
 
@@ -109,8 +110,9 @@ var app = new Vue({
 				console.log("Keyvalue: ", that.userInfo.keyvalue);
 
 				that.gettingUserInfo = false;
-				that.$emit("setUserInfo", that.userInfo); // TODO: Not sure if I need this if I can pass in a function callback instead
-				that.$emit("update", that.userInfo);
+				//that.$emit("setUserInfo", that.userInfo); // TODO: Not sure if I need this if I can pass in a function callback instead
+				//that.$emit("update", that.userInfo);
+				app.callCallback("update", that.userInfo);
 				if (f !== null && typeof f === "function") f();
             });
 		},
@@ -281,6 +283,7 @@ VueZeroFrameRouter.VueZeroFrameRouter_Init(Router, app, [
 	{ route: "plugin/:username/:id", component: Plugin },
 	{ route: "plugins/upload", component: UploadPlugin },
 	{ route: "plugins", component: Plugins },
+	{ route: "profile/:username", component: Profile },
 	{ route: "profile", component: Profile },
 	{ route: "create-id", component: CreateId },
 	{ route: "", component: Home }

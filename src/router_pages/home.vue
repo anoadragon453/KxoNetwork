@@ -75,7 +75,7 @@
 
 			<div v-if="currentTab == 'kxoids'">
 				<v-container style="max-width: 50%; float: left;">
-					<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="">
+					<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="goto('profile/' + result.username)">
 						<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
 						<div style="float: right; width: calc(100% - 50px);">
 							<div><strong style="color: blue;">{{ result.username }}</strong></div>
@@ -85,7 +85,7 @@
 					</v-card>
 				</v-container>
 				<v-container style="max-width: 50%; float: right;">
-					<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="">
+					<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="goto('profile/' + result.username)">
 						<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
 						<div style="float: right; width: calc(100% - 50px);">
 							<div><strong style="color: blue;">{{ result.username }}</strong></div>

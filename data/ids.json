@@ -188,6 +188,34 @@
 			"address": "173myZU87sPuwtpwhRT2fY32i2MSxgYMM4",
 			"signature": "HFL2Or0CZMd3MtLcP1B5WBlsH9VU7XR0UHw4b5rDuEbrZ9ktF9THYFMLLbdnxH+HKribs+WkCCd7V9ZdA47ozBE=",
 			"date_added": 1536757544187
+		},
+		{
+			"id": 1538006139161,
+			"username": "0x1e",
+			"address": "1BnfMtqbziwfswLc9rkc6oTA968mBYUwmm",
+			"signature": "G1KxVHdiv8AgmKsqXfB1dW8033N2uK1RG+J3ACltSnt9cFdrEKk3uCD2/7CMdzRXuq2hY+PRHmNgpB+VFLrQPI8=",
+			"date_added": 1538006139161
+		},
+		{
+			"id": 1538006140780,
+			"username": "0x1e",
+			"address": "1BnfMtqbziwfswLc9rkc6oTA968mBYUwmm",
+			"signature": "G1KxVHdiv8AgmKsqXfB1dW8033N2uK1RG+J3ACltSnt9cFdrEKk3uCD2/7CMdzRXuq2hY+PRHmNgpB+VFLrQPI8=",
+			"date_added": 1538006140780
+		},
+		{
+			"id": 1538044730973,
+			"username": "noruka",
+			"address": "1JoFKzXjFS5koCLsyVjx3uTt3QZniaLnJ6",
+			"signature": "G8UBRIXW85n5yJfTQaDO9J2041GEdS0WFSHhs6/yVmVNQsGw31MJbM9GBHui6LqvahKORdrCAyV62fDkGzRK6Hs=",
+			"date_added": 1538044730973
+		},
+		{
+			"id": 1538044732078,
+			"username": "noruka",
+			"address": "1JoFKzXjFS5koCLsyVjx3uTt3QZniaLnJ6",
+			"signature": "G8UBRIXW85n5yJfTQaDO9J2041GEdS0WFSHhs6/yVmVNQsGw31MJbM9GBHui6LqvahKORdrCAyV62fDkGzRK6Hs=",
+			"date_added": 1538044732078
 		}
 	]
 }

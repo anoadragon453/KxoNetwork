@@ -41,10 +41,12 @@
 		    </v-list>
 		</v-menu>
 		<v-toolbar-items>
-			<svg style="height: 50%; width: auto; margin-top: auto; margin-bottom: auto;" v-bind:data-jdenticon-value="userInfo.auth_address" v-if="isLoggedIn"></svg>
 			<v-btn flat v-if="!isLoggedIn" @click="login()">Sign In</v-btn>
 			<v-btn flat v-if="!isLoggedIn" @click="goto('create-id')">Register</v-btn>
-			<v-btn flat v-else @click="goto('profile')">{{ userInfo.cert_user_id }}</v-btn>
+			<v-btn flat v-else @click="goto('profile')">
+				<svg style="height: 50%; width: auto; margin-top: auto; margin-bottom: auto; margin-right: 5px;" v-bind:data-jdenticon-value="userInfo.auth_address" v-if="isLoggedIn"></svg>
+				{{ userInfo.cert_user_id }}
+			</v-btn>
 		</v-toolbar-items>
 	</v-toolbar>
 </template>
