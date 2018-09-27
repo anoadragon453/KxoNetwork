@@ -11,96 +11,97 @@
 			<v-card style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 				<v-toolbar color="white" dense prominent extended flat>
 					<v-text-field prepend-icon="search" hide-details single-line clearable v-bind:placeholder="'Search ' + currentTab" style="margin-right: 5px; margin-left: 3px;" v-model="searchQuery" @keyup.enter="getResults()" @blur="getResults()"></v-text-field>
-					<v-tabs slot="extension" centered>
-						<v-tab @click="changeTab('zites')">Zites</v-tab>
-						<v-tab @click="changeTab('kxoids')">KxoIds</v-tab>
-						<v-tab>Audio</v-tab>
-						<v-tab>Video</v-tab>
-						<v-tab>Posts</v-tab>
-						<v-tab>Files</v-tab>
+					<v-tabs slot="extension" centered v-model="active" v-bind="active">
+						<v-tab key="zites" @click="changeTab('zites')">Zites</v-tab>
+						<v-tab key="kxoids" @click="changeTab('kxoids')">KxoIds</v-tab>
+						<v-tab key="audio" @click="changeTab('audio')">Audio</v-tab>
+						<v-tab key="video">Video</v-tab>
+						<v-tab key="posts">Posts</v-tab>
+						<v-tab key="files">Files</v-tab>
 					</v-tabs>
 				</v-toolbar>
 			</v-card>
 
-			<div v-if="currentTab == 'zites' && searchQuery != ''">
-				<div style="margin-left: 15px; margin-right: 15px; margin-top: 8px;">Time: {{ searchTime / 1000.0 }} seconds</div>
+			<v-container grid-list-xl>
+				<v-layout row wrap v-if="currentTab == 'zites' && searchQuery != '' && results && results.length > 0">
+					<v-flex xs12 style="padding: 0;"><div style="margin-left: 15px; margin-right: 15px;">Time: {{ searchTime / 1000.0 }} seconds</div></v-flex>
 
-				<v-container style="max-width: 50%; float: left;">
-					<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
-						<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
-						<div style="text-align: center;"><small>{{ (result.zite == "ZeroTalk" ? "ZeroTalk: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>
-					</v-card>
-				</v-container>
-				<v-container style="max-width: 50%; float: right;">
-					<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
-						<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
-						<div style="text-align: center;"><small>{{ (result.zite == "ZeroTalk" ? "ZeroTalk: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>
-					</v-card>
-				</v-container>
+					<v-flex xs12 sm6>
+						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+							<div style="text-align: center;"><small>{{ (result.zite == "ZeroTalk" ? "ZeroTalk: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>
+						</v-card>
+					</v-flex>
+					<v-flex xs12 sm6>
+						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+							<div style="text-align: center;"><small>{{ (result.zite == "ZeroTalk" ? "ZeroTalk: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>
+						</v-card>
+					</v-flex>
+					
+					<v-flex xs12 v-if="gitCenterResults.length > 0">
+						<v-card v-for="result in gitCenterResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + result.address || '#')">
+							<div style="text-align: center;"><strong style="color: blue;">Git Center: {{ result.title }}</strong></div>
+							<div style="margin-bottom: 5px; text-align: center;">{{ result.description.slice(0, 150) }}</div>
+							<div style="text-align: center;"><small>{{ result.address }}</small></div>
+						</v-card>
+					</v-flex>
+					<v-flex xs12 v-if="zeroExchangeResults.length > 0">
+						<v-card v-for="result in zeroExchangeResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/ZeroExchange.bit/?/' + result.site + '/' + result.directory.replace(/data\/users\//, '') + '/' + result.date_added || '#')">
+							<div style="text-align: center;"><strong style="color: blue;">ZeroExchange: {{ result.title }}</strong></div>
+							<div style="margin-bottom: 5px; text-align: center;">{{ result.body.slice(0, 150) }}</div>
+						</v-card>
+					</v-flex>
+				</v-layout>
+
+				<!-- Featured Zites -->
+				<v-layout row wrap v-if="currentTab == 'zites' && (searchQuery == '' || !results || results.length == 0)">
+					<v-flex xs12 style="padding: 0;"><div style="margin-left: 15px; margin-right: 15px;">Featured Zites</div></v-flex>
+
+					<v-flex xs12 sm6>
+						<v-card v-for="result in featured.slice(0, Math.round(featured.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+							<div style="text-align: center;"><small>{{ (result.address || getLinkFromBody(result)) }}</small></div>
+						</v-card>
+					</v-flex>
+					<v-flex xs12 sm6>
+						<v-card v-for="result in featured.slice(Math.round(featured.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+							<div style="text-align: center;"><small>{{ (result.address || getLinkFromBody(result)) }}</small></div>
+						</v-card>
+					</v-flex>
+				</v-layout>
+
+				<v-layout row wrap v-if="currentTab == 'kxoids'">
+					<v-flex xs12 sm6>
+						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="goto('profile/' + result.username)">
+							<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
+							<div style="float: right; width: calc(100% - 50px);">
+								<div><strong style="color: blue;">{{ result.username }}</strong></div>
+								<div><small>{{ result.address }}</small></div>
+							</div>
+							<div style="clear: both;"></div>
+						</v-card>
+					</v-flex>
+					<v-flex xs12 sm6>
+						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="goto('profile/' + result.username)">
+							<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
+							<div style="float: right; width: calc(100% - 50px);">
+								<div><strong style="color: blue;">{{ result.username }}</strong></div>
+								<div><small>{{ result.address }}</small></div>
+							</div>
+							<div style="clear: both;"></div>
+						</v-card>
+					</v-flex>
+				</v-layout>
+			</v-container>
+
+			<div v-if="(currentTab == 'zites' && searchQuery != '' && results && (results.length > 0 || pageNum > 0)) || currentTab != 'zites'">
+				<v-btn style="float: left;" @click="prevPage()">&lt;</v-btn>
+				<v-btn style="float: right;" @click="nextPage()">&gt;</v-btn>
+				<div style="text-align: center; margin-top: 16px;"> page {{ pageNum + 1 }} </div>
 				<div style="clear: both;"></div>
-				
-				<v-container v-if="gitCenterResults.length > 0">
-					<v-card v-for="result in gitCenterResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + result.address || '#')">
-						<div style="text-align: center;"><strong style="color: blue;">Git Center: {{ result.title }}</strong></div>
-						<div style="margin-bottom: 5px; text-align: center;">{{ result.description.slice(0, 150) }}</div>
-						<div style="text-align: center;"><small>{{ result.address }}</small></div>
-					</v-card>
-				</v-container>
-				<v-container v-if="zeroExchangeResults.length > 0">
-					<v-card v-for="result in zeroExchangeResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/ZeroExchange.bit/?/' + result.site + '/' + result.directory.replace(/data\/users\//, '') + '/' + result.date_added || '#')">
-						<div style="text-align: center;"><strong style="color: blue;">ZeroExchange: {{ result.title }}</strong></div>
-						<div style="margin-bottom: 5px; text-align: center;">{{ result.body.slice(0, 150) }}</div>
-					</v-card>
-				</v-container>
 			</div>
-
-			<!-- Featured Zites -->
-			<div v-if="currentTab == 'zites' && searchQuery == ''">
-				<div style="margin-left: 15px; margin-right: 15px; margin-top: 8px;">Featured Zites</div>
-
-				<v-container style="max-width: 50%; float: left;">
-					<v-card v-for="result in featured.slice(0, Math.round(featured.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
-						<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
-						<div style="text-align: center;"><small>{{ (result.address || getLinkFromBody(result)) }}</small></div>
-					</v-card>
-				</v-container>
-				<v-container style="max-width: 50%; float: right;">
-					<v-card v-for="result in featured.slice(Math.round(featured.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
-						<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
-						<div style="text-align: center;"><small>{{ (result.address || getLinkFromBody(result)) }}</small></div>
-					</v-card>
-				</v-container>
-				<div style="clear: both;"></div>
-			</div>
-
-			<div v-if="currentTab == 'kxoids'">
-				<v-container style="max-width: 50%; float: left;">
-					<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="goto('profile/' + result.username)">
-						<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
-						<div style="float: right; width: calc(100% - 50px);">
-							<div><strong style="color: blue;">{{ result.username }}</strong></div>
-							<div><small>{{ result.address }}</small></div>
-						</div>
-						<div style="clear: both;"></div>
-					</v-card>
-				</v-container>
-				<v-container style="max-width: 50%; float: right;">
-					<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;" @click.native="goto('profile/' + result.username)">
-						<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
-						<div style="float: right; width: calc(100% - 50px);">
-							<div><strong style="color: blue;">{{ result.username }}</strong></div>
-							<div><small>{{ result.address }}</small></div>
-						</div>
-						<div style="clear: both;"></div>
-					</v-card>
-				</v-container>
-				<div style="clear: both;"></div>
-			</div>
-
-			<v-btn style="margin-top: 16px; float: left;" @click="prevPage()">&lt;</v-btn>
-			<v-btn style="margin-top: 16px; float: right;" @click="nextPage()">&gt;</v-btn>
-			<div style="text-align: center; margin-top: 24px;"> page {{ pageNum + 1 }} </div>
-			<div style="clear: both;"></div>
 		</v-container>
 	</v-container>
 </template>
@@ -114,6 +115,7 @@
 		name: "home",
 		data: () => {
 			return {
+				active: "",
 				currentTab: "zites",
 				prevResults: [],
 				results: [],
@@ -149,6 +151,16 @@
 				self.ZiteName = langTranslation["KxoId"];
 			});
 			this.ZiteName = this.langTranslation["KxoId"];*/
+
+			if (Router.currentParams["searchQuery"]) {
+				this.searchQuery = Router.currentParams["searchQuery"].replace("%20", " ");
+				this.getResults();
+			}
+			if (Router.currentParams["tab"]) {
+				this.currentTab = Router.currentParams["tab"];
+				//this.active = Router.currentParams["tab"];
+				this.changeTab(Router.currentParams["tab"]);
+			}
 		},
 		mounted: function() {
 			var self = this;
@@ -226,7 +238,20 @@
                 }
             },
             getResults: function(pageChange = false, next = false, previous = false) {
+				if (this.currentTab == "zites" && (!this.searchQuery || this.searchQuery == null || this.searchQuery == "")) {
+					this.results = [];
+					this.pageNum = 0;
+					this.subPageNum = 0;
+					this.searchTime = 0;
+					this.gitCenterResults = [];
+					this.zeroExchangeResults = [];
+					this.currentQueries = 0;
+					page.cmd("wrapperPushState", [{ "route": "/search/" + this.currentTab }, "/search/" + this.currentTab, "/search/" + this.currentTab]);
+					return;
+				}
             	if (!pageChange && this.previousSearchQuery == this.searchQuery) return;
+
+				page.cmd("wrapperPushState", [{ "route": "/search/" + this.currentTab + "/" + this.searchQuery }, "/search/" + this.currentTab + "/" + this.searchQuery, "/search/" + this.currentTab + "/" + this.searchQuery]);
 
             	var setNextResults = false;
             	//var setPrevResults = false;
@@ -607,6 +632,7 @@
                 return "#";
 			},
 			changeTab: function(tabName) {
+				console.log("Active: " + this.active);
 				this.currentTab = tabName;
 
 				if (tabName == "kxoids") {

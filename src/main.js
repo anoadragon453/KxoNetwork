@@ -280,6 +280,7 @@ var Profile = require("./router_pages/profile.vue");
 var Plugins = require("./router_pages/plugins.vue");
 var UploadPlugin = require("./router_pages/upload_plugin.vue");
 var Plugin = require("./router_pages/plugin.vue");
+var Settings = require("./router_pages/settings.vue");
 
 VueZeroFrameRouter.VueZeroFrameRouter_Init(Router, app, [
 	{ route: "plugin/:username/:id", component: Plugin },
@@ -288,5 +289,9 @@ VueZeroFrameRouter.VueZeroFrameRouter_Init(Router, app, [
 	{ route: "profile/:username", component: Profile },
 	{ route: "profile", component: Profile },
 	{ route: "create-id", component: CreateId },
+	{ route: "search/:tab/:searchQuery", component: Home },
+	{ route: "search/:tab", component: Home },
+	{ route: "search", component: Home },
+	{ route: "settings", component: Settings },
 	{ route: "", component: Home }
 ]);
