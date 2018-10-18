@@ -87,7 +87,7 @@
 									case 'NotUnique':
 									{
 										console.log(page.siteInfo.auth_address);
-										// Check if already is db
+										// Check if already in db
 										page.cmd("dbQuery", ["SELECT * FROM ids WHERE address='" + page.siteInfo.auth_address + "'"], (results) => {
 											if (results.length > 0) {
 												page.cmdp("certAdd", [certname, "web", results[0].username, results[0].signature])

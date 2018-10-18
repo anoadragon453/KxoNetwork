@@ -1,9 +1,18 @@
 <template>
 	<v-container fluid>
-		<v-container v-if="!isLoggedIn" style="padding-top: 7px; padding-bottom: 7px; max-width: 900px;"> <!-- Not Logged In -->
+		<!--<v-container v-if="!isLoggedIn" style="padding-top: 7px; padding-bottom: 7px; max-width: 900px;">
 			<v-card color="blue" tile style="margin: 0;">
 				<v-card-text style="text-align: center;">
 					<a href="#" @click.prevent="goto('create-id')" style="color: black;">Create a KxoId</a> to get the full experience of the KxoNetwork!
+				</v-card-text>
+			</v-card>
+		</v-container>-->
+		<v-container style="padding-top: 7px; padding-bottom: 7px; max-width: 900px;"> <!-- Not Logged In -->
+			<v-card color="red" tile style="margin: 0;">
+				<v-card-text style="text-align: center;">
+					<div class="subheading" style="font-weight: 500;"><strong>ZeroNet Vulnerability Fix</strong></div>
+					<p>A serious ZeroNet Vulnerability has been found. For more information, goto this ZeroTalk post, created and backed by krixano, gitcenter, thunder, zerolstn, and nofish: </p>
+					<a href="/Talk.ZeroNetwork.bit/?Topics:1538339080_1Cy3ntkN2GN9MH6EaW6eHpi4YoRS2nK5Di/Important+Information+about+Security+Update+Rev3616" style="color: black;">ZeroTalk › Important Information about Security Update Rev3616</a>
 				</v-card-text>
 			</v-card>
 		</v-container>
@@ -27,27 +36,27 @@
 					<v-flex xs12 style="padding: 0;"><div style="margin-left: 15px; margin-right: 15px;">Time: {{ searchTime / 1000.0 }} seconds</div></v-flex>
 
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ (result.zite == "ZeroTalk" ? "ZeroTalk: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>
 						</v-card>
 					</v-flex>
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ (result.zite == "ZeroTalk" ? "ZeroTalk: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>
 						</v-card>
 					</v-flex>
 					
 					<v-flex xs12 v-if="gitCenterResults.length > 0">
-						<v-card v-for="result in gitCenterResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + result.address || '#')">
+						<v-card v-for="result in gitCenterResults" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + result.address || '#')">
 							<div style="text-align: center;"><strong style="color: blue;">Git Center: {{ result.title }}</strong></div>
 							<div style="margin-bottom: 5px; text-align: center;">{{ result.description.slice(0, 150) }}</div>
 							<div style="text-align: center;"><small>{{ result.address }}</small></div>
 						</v-card>
 					</v-flex>
 					<v-flex xs12 v-if="zeroExchangeResults.length > 0">
-						<v-card v-for="result in zeroExchangeResults" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/ZeroExchange.bit/?/' + result.site + '/' + result.directory.replace(/data\/users\//, '') + '/' + result.date_added || '#')">
+						<v-card v-for="result in zeroExchangeResults" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/ZeroExchange.bit/?/' + result.site + '/' + result.directory.replace(/data\/users\//, '') + '/' + result.date_added || '#')">
 							<div style="text-align: center;"><strong style="color: blue;">ZeroExchange: {{ result.title }}</strong></div>
 							<div style="margin-bottom: 5px; text-align: center;">{{ result.body.slice(0, 150) }}</div>
 						</v-card>
@@ -59,13 +68,13 @@
 					<v-flex xs12 style="padding: 0;"><div style="margin-left: 15px; margin-right: 15px;">Featured Zites</div></v-flex>
 
 					<v-flex xs12 sm6>
-						<v-card v-for="result in featured.slice(0, Math.round(featured.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in featured.slice(0, Math.round(featured.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ (result.address || getLinkFromBody(result)) }}</small></div>
 						</v-card>
 					</v-flex>
 					<v-flex xs12 sm6>
-						<v-card v-for="result in featured.slice(Math.round(featured.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in featured.slice(Math.round(featured.length / 2.0))" style="padding: 10px; 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ (result.address || getLinkFromBody(result)) }}</small></div>
 						</v-card>
@@ -74,7 +83,7 @@
 
 				<v-layout row wrap v-if="currentTab == 'kxoids'">
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="goto('profile/' + result.username)">
+						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="goto('profile/' + result.username)">
 							<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
 							<div style="float: right; width: calc(100% - 50px);">
 								<div><strong style="color: blue;">{{ result.username }}</strong></div>
@@ -84,7 +93,7 @@
 						</v-card>
 					</v-flex>
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="goto('profile/' + result.username)">
+						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="goto('profile/' + result.username)">
 							<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
 							<div style="float: right; width: calc(100% - 50px);">
 								<div><strong style="color: blue;">{{ result.username }}</strong></div>
@@ -133,7 +142,7 @@
 					{ title: "0Play Game Center", address: "1Ag6xidDHiPgWoDKhfSx4xFQr6WC3NqxZg" },
 					{ title: "ZeroExchange", address: "ZeroExchange.bit" },
 					{ title: "Git Center", address: "1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t" },
-					{ title: "Horizon", address: "1CjMsvhJ2JsV4B5qo3FDHnF3mvRCcHuxBn" },
+					{ title: "Horizon", address: "1HoRiznsHbJAqs2bmrVcSd79NTGVFp4Ju2" },
 					{ title: "ZPlace", address: "1D6f2CvDRhPeEeBAcmqGt3X9z2CkLpmv2V" },
 					{ title: "ThunderWave", address: "thunderwave.bit" },
 					{ title: "Kiwipedia", address: "1KiwiBCVBUcuypVm8FEmUW9YT6fJDXkN9r" },

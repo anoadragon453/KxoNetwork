@@ -41,9 +41,9 @@ var Navbar = require("./vue_components/navbar.vue");
 var app = new Vue({
 	el: "#app",
 	template: `<div><v-app>
-			<component ref="navbar" :is="navbar" :user-info="userInfo" :lang-translation="langTranslation"></component>
+			<component ref="navbar" :is="navbar" :user-info="userInfo" :site-info="siteInfo" :lang-translation="langTranslation"></component>
 			<v-content>
-				<component ref="view" :is="currentView" v-on:setcallback="setCallback" v-on:get-user-info="getUserInfo()" :user-info="userInfo" :getting-user-info="gettingUserInfo" :lang-translation="langTranslation"></component>
+				<component ref="view" :is="currentView" v-on:setcallback="setCallback" v-on:get-user-info="getUserInfo()" :user-info="userInfo" :site-info="siteInfo" :getting-user-info="gettingUserInfo" :lang-translation="langTranslation"></component>
 			</v-content>
 		</v-app></div>`,
 	data: {
@@ -54,10 +54,19 @@ var app = new Vue({
 		gettingUserInfo: true,
 		langTranslation: defaultLang,
 		peerReceiveCallback: null,
-		updateCallback: null
+		updateCallback: null,
+		updateSiteInfoCallback: null
 	},
 	methods: {
 		getUserInfo: function(f = null) {
+			page.cmd("dbQuery", ["SELECT * FROM ids WHERE address='" + this.siteInfo.auth_address + "'"], (results) => {
+				if (results.length > 0) {
+					page.cmdp("certAdd", [certname, "web", results[0].username, results[0].signature])
+						.then((res) => {
+						});
+				}
+			});
+			
 			console.log(this.siteInfo);
             if (this.siteInfo == null || this.siteInfo.cert_user_id == null) {
                 this.userInfo = null;
@@ -69,7 +78,8 @@ var app = new Vue({
 
             var that = this;
 
-            if (f !== null && typeof f === "function") f();
+			if (f !== null && typeof f === "function") f();
+			
 
             page.cmd("dbQuery", ["SELECT key, value FROM keyvalue LEFT JOIN json USING (json_id) WHERE cert_user_id=\"" + this.siteInfo.cert_user_id + "\" AND directory=\"users/" + this.siteInfo.auth_address + "\""], (rows) => {
                 var keyvalue = {};
@@ -154,6 +164,7 @@ class ZeroApp extends ZeroFrame {
 				self.siteInfo = siteInfo;
 				app.siteInfo = siteInfo;
 				app.callCallback("update");
+				//app.callCallback("updateSiteInfo", siteInfo);
 				if (siteInfo.address!="1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P" && !siteInfo.settings.own){self.cmdp("wrapperNotification", ["warning", "Note: This was cloned from another zite. You<br>\ncan find the original zite at this address:<br>\n 1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P."]);}
 				app.getUserInfo();
 			});

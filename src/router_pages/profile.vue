@@ -7,23 +7,9 @@
 				<p>{{ auth_address }}</p>
 			</div>
 			<div style="clear: both;"></div>
-			<div v-if="userInfo && address == userInfo.auth_address">
-				<hr>
-				<div style="display: block; margin-bottom: 10px;"><strong style="font-size: 1.2em;">Zite Search Settings</strong></div>
-				<div style="width: 50%; float: left;">
-					<v-card v-for="zite in corsZites.slice(0, Math.round(corsZites.length / 2))" :key="zite.address" style="cursor: pointer;">
-						<v-card-title primary-title>
-							<strong style="color: blue;">{{ zite.searchType }}: {{ zite.title }}</strong>
-						</v-card-title>
-					</v-card>
-				</div>
-				<div style="width: 50%; float: right">
-					<v-card v-for="zite in corsZites.slice(Math.round(corsZites.length / 2))" :key="zite.address" style="cursor: pointer;">
-						<v-card-title primary-title>
-							<strong style="color: blue;">{{ zite.searchType }}: {{ zite.title }}</strong>
-						</v-card-title>
-					</v-card>
-				</div>
+
+			<div>
+				<v-divider></v-divider>
 			</div>
 		</v-container>
 	</v-container>

@@ -9,18 +9,19 @@
             <v-container grid-list-xl>
                 <v-layout row wrap>
                     <v-flex xs12 sm6>
-                        <v-card v-for="result in zites.slice(0, Math.round(zites.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="getCors(result.address)">
+                        <v-card v-for="result in zites.slice(0, Math.round(zites.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="getCors(result.address)">
                             <div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+							<div v-if="" style="text-align: center;"><small>Enabled</small></div>
                         </v-card>
                     </v-flex>
                     <v-flex xs12 sm6>
-                        <v-card v-for="result in zites.slice(Math.round(zites.length / 2.0))" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="getCors(result.address)">
+                        <v-card v-for="result in zites.slice(Math.round(zites.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="getCors(result.address)">
                             <div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+							<div v-if="" style="text-align: center;"><small>Enabled</small></div>
                         </v-card>
                     </v-flex>
                 </v-layout>
             </v-container>
-
 		</v-container>
 	</v-container>
 </template>
@@ -30,13 +31,17 @@
 	var searchDbQuery = require("../libs/search.js");
 
 	module.exports = {
-		props: ["userInfo", "langTranslation"],
+		props: ["userInfo", "siteInfo", "langTranslation"],
 		name: "settings",
 		data: () => {
 			return {
                 zites: [
-                    { title: "Important Zites", address: "1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E" },
-                    { title: "ZeroMe", address: "1MeFqFfFFGQfa1J3gJyYYUvb5Lksczq7nH" },
+					{ title: "Important Zites", address: "1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", enabled: false },
+					{ title: "ZeroSites", address: "1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", enabled: false },
+                    { title: "ZeroMe", address: "1MeFqFfFFGQfa1J3gJyYYUvb5Lksczq7nH", enabled: false },
+					{ title: "ZeroTalk", address: "1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT", enabled: false },
+					{ title: "GitCenter", address: "1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", enabled: false },
+					{ title: "ZeroExchange", address: "1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", enabled: false },
                 ]
 			};
 		},
@@ -50,18 +55,34 @@
 		mounted: function() {
 			var self = this;
 
-			this.$emit("setcallback", "update", function() {
-                /*self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
-					self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
-						self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
-							self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
-								self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", false, () => {
-									self.getCorsAndDb("1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT", true);
-								});
-							});
-						});
-					});
-				});*/
+			if (this.siteInfo) {
+				for (var i in this.siteInfo.settings.permissions) {
+					var corsPerm = this.siteInfo.settings.permissions[i];
+					var address = corsPerm.replace("Cors:", "");
+
+					for (var i2 in this.zites) {
+						var zite = this.zites[i2];
+
+						if (address == zite.address) {
+							this.zites[i2].enabled = true;
+						}
+					}
+				}
+			}
+
+			this.$emit("setcallback", "updateSiteInfo", function() {
+				for (var i in this.siteInfo.settings.permissions) {
+					var corsPerm = this.siteInfo.settings.permissions[i];
+					var address = corsPerm.replace("Cors:", "");
+
+					for (var i2 in this.zites) {
+						var zite = this.zites[i2];
+						
+						if (address == zite.address) {
+							this.zites[i2].enabled = true;
+						}
+					}
+				}
 			});
 
 			/*self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
