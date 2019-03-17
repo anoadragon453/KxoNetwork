@@ -753,11 +753,12 @@
 				if (tabName == "kxoids") {
 					this.limit = 12; // 24
 				} else if (tabName == "video") {
-					this.limit = 6;
+					this.limit = 5;
 				} else {
 					this.limit = 4; // 8
 				}
 
+				if (this.searchQuery == null) this.searchQuery = "";
 				this.previousSearchQuery = null;
 				this.getResults();
 			}
