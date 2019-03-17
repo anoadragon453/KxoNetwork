@@ -11,13 +11,13 @@
                     <v-flex xs12 sm6>
                         <v-card v-for="result in zites.slice(0, Math.round(zites.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="getCors(result.address)">
                             <div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
-							<div v-if="" style="text-align: center;"><small>Enabled</small></div>
+							<div v-if="result.enabled" style="text-align: center;"><small>Enabled</small></div>
                         </v-card>
                     </v-flex>
                     <v-flex xs12 sm6>
                         <v-card v-for="result in zites.slice(Math.round(zites.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="getCors(result.address)">
                             <div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
-							<div v-if="" style="text-align: center;"><small>Enabled</small></div>
+							<div v-if="result.enabled" style="text-align: center;"><small>Enabled</small></div>
                         </v-card>
                     </v-flex>
                 </v-layout>
@@ -42,6 +42,8 @@
 					{ title: "ZeroTalk", address: "1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT", enabled: false },
 					{ title: "GitCenter", address: "1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", enabled: false },
 					{ title: "ZeroExchange", address: "1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", enabled: false },
+					{ title: "KxoVid", address: "14c5LUN73J7KKMznp9LvZWkxpZFWgE1sDz", enabled: false },
+					{ title: "KopyKate Big", address: "18Pfr2oswXvD352BbJvo59gZ3GbdbipSzh", enabled: false },
                 ]
 			};
 		},

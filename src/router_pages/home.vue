@@ -1,18 +1,9 @@
 <template>
 	<v-container fluid>
-		<!--<v-container v-if="!isLoggedIn" style="padding-top: 7px; padding-bottom: 7px; max-width: 900px;">
+		<v-container v-if="!isLoggedIn" style="padding-top: 7px; padding-bottom: 7px; max-width: 900px;">
 			<v-card color="blue" tile style="margin: 0;">
 				<v-card-text style="text-align: center;">
 					<a href="#" @click.prevent="goto('create-id')" style="color: black;">Create a KxoId</a> to get the full experience of the KxoNetwork!
-				</v-card-text>
-			</v-card>
-		</v-container>-->
-		<v-container style="padding-top: 7px; padding-bottom: 7px; max-width: 900px;"> <!-- Not Logged In -->
-			<v-card color="red" tile style="margin: 0;">
-				<v-card-text style="text-align: center;">
-					<div class="subheading" style="font-weight: 500;"><strong>ZeroNet Vulnerability Fix</strong></div>
-					<p>A serious ZeroNet Vulnerability has been found. For more information, goto this ZeroTalk post, created and backed by krixano, gitcenter, thunder, zerolstn, and nofish: </p>
-					<a href="/Talk.ZeroNetwork.bit/?Topics:1538339080_1Cy3ntkN2GN9MH6EaW6eHpi4YoRS2nK5Di/Important+Information+about+Security+Update+Rev3616" style="color: black;">ZeroTalk › Important Information about Security Update Rev3616</a>
 				</v-card-text>
 			</v-card>
 		</v-container>
@@ -23,8 +14,8 @@
 					<v-tabs slot="extension" centered v-model="active" v-bind="active">
 						<v-tab key="zites" @click="changeTab('zites')">Zites</v-tab>
 						<v-tab key="kxoids" @click="changeTab('kxoids')">KxoIds</v-tab>
-						<v-tab key="audio" @click="changeTab('audio')">Audio</v-tab>
-						<v-tab key="video">Video</v-tab>
+						<!--<v-tab key="audio" @click="changeTab('audio')">Audio</v-tab>-->
+						<v-tab key="video" @click="changeTab('video')">Video</v-tab>
 						<v-tab key="posts">Posts</v-tab>
 						<v-tab key="files">Files</v-tab>
 					</v-tabs>
@@ -32,6 +23,7 @@
 			</v-card>
 
 			<v-container grid-list-xl>
+				<!-- Zites -->
 				<v-layout row wrap v-if="currentTab == 'zites' && searchQuery != '' && results && results.length > 0">
 					<v-flex xs12 style="padding: 0;"><div style="margin-left: 15px; margin-right: 15px;">Time: {{ searchTime / 1000.0 }} seconds</div></v-flex>
 
@@ -81,6 +73,7 @@
 					</v-flex>
 				</v-layout>
 
+				<!-- KxoIds -->
 				<v-layout row wrap v-if="currentTab == 'kxoids'">
 					<v-flex xs12 sm6>
 						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="goto('profile/' + result.username)">
@@ -103,6 +96,27 @@
 						</v-card>
 					</v-flex>
 				</v-layout>
+
+				<!-- Videos -->
+				<v-layout row wrap v-if="currentTab == 'video'">
+					<v-flex xs12 style="padding: 0;"><div style="margin-left: 15px; margin-right: 15px;">Time: {{ searchTime / 1000.0 }} seconds</div></v-flex>
+
+					<v-flex xs12 sm6>
+						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+							<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid" : (result.zite == "KopyKate Big" ? "KopyKate Big" : "")) }}</small></div>
+							<!--<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>-->
+						</v-card>
+					</v-flex>
+					<v-flex xs12 sm6>
+						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+							<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid" : (result.zite == "KopyKate Big" ? "KopyKate Big" : "")) }}</small></div>
+							<!--<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>-->
+						</v-card>
+					</v-flex>
+				</v-layout>
+
 			</v-container>
 
 			<div v-if="(currentTab == 'zites' && searchQuery != '' && results && (results.length > 0 || pageNum > 0)) || currentTab != 'zites'">
@@ -120,7 +134,7 @@
 	var searchDbQuery = require("../libs/search.js");
 
 	module.exports = {
-		props: ["userInfo", "langTranslation"],
+		props: ["siteInfo", "userInfo", "langTranslation"],
 		name: "home",
 		data: () => {
 			return {
@@ -182,8 +196,8 @@
 			console.log(self.userInfo);
 
 			this.$emit("setcallback", "update", function() {
-                self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
-					self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
+                self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", true, () => {
+					/*self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
 						self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
 							self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
 								self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", false, () => {
@@ -191,14 +205,14 @@
 								});
 							});
 						});
-					});
+					});*/
 				});
 			});
 
 			this.$parent.$on("update", function() {
                 //self.getQuestions();
-                self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
-					self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
+                self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", true, () => {
+					/*self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
 						self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
 							self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
 								self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", false, () => {
@@ -206,12 +220,12 @@
 								});
 							});
 						});
-					});
+					});*/
 				});
 			});
 
-			self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
-				self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
+			self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", true, () => {
+				/*self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
 					self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
 						self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
 							self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", false, () => {
@@ -219,7 +233,7 @@
 							});
 						});
 					});
-				});
+				});*/
 			});
 			// 1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E
 		},
@@ -231,10 +245,11 @@
 		},
 		methods: {
 			getCorsAndDb: function(address, doGetResults = false, callback = null) {
-				console.log("Test");
+				if (!page.siteInfo) return;
+
                 var self = this;
                 this.pageNum = 0;
-                if(page.siteInfo.settings.permissions.indexOf("Cors:" + address) < 0) {
+                if (page.siteInfo.settings.permissions.indexOf("Cors:" + address) < 0) {
                     page.cmd("corsPermission", address, function() {
                     		if (doGetResults)
                             	self.getResults();
@@ -310,180 +325,16 @@
             	var self = this;
 
             	if (this.currentTab == "kxoids") {
-            		var searchSelects_KxoIds = [
-            			{ col: "username", score: 5 },
-            			{ col: "address", score: 4 }
-            		];
-
-            		var query = searchDbQuery(this, this.searchQuery || "", {
-            			orderByScore: true,
-            			id_col: "id",
-            			select: "*",
-            			searchSelects: searchSelects_KxoIds,
-            			table: "ids",
-            			page: pageNum,
-            			//afterOrderBy: "date_added ASC",
-            			limit: this.limit
-            		});
-
-            		this.doSearchQuery("KxoId", "self", searchSelects_KxoIds, query, setNextResults, subPageNum);
+					this.getKxoIdResults(pageNum, subPageNum, setNextResults);
             		return;
-            	}
-
-				var searchSelects_KxoZites = [
-					{ col: "title", score: 5 },
-					{ col: "domain", score: 5 },
-					{ col: "address", score: 5 },
-					{ col: "tags", score: 4 },
-					{ col: "category_slug", score: 4 },
-					{ col: "merger_category", score: 4 },
-					{ col: "creator", score: 3 },
-					{ col: "description", score: 2 },
-					//{ skip: !app.userInfo || !app.userInfo.auth_address, col: "bookmarkCount", select: this.subQueryBookmarks(), inSearchMatchesAdded: false, inSearchMatchesOrderBy: true, score: 6 } // TODO: Rename inSearchMatchesAdded, and isSearchMatchesOrderBy
-				];
-
-				var query = searchDbQuery(this, this.searchQuery || "", {
-					orderByScore: true,
-					id_col: "id",
-					select: "*",
-					searchSelects: searchSelects_KxoZites,
-					table: "zites",
-					join: "LEFT JOIN json USING (json_id)",
-					//where: languageWhere,
-					page: pageNum,
-					afterOrderBy: "date_added ASC",
-					limit: this.limit
-				});
-				this.doSearchQuery("KxoNetwork", "1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", searchSelects_KxoZites, query, setNextResults, subPageNum);
-
-				var searchSelects_ZeroSites = [
-					{ col: "title", score: 5 },
-                    { col: "address", score: 5 },
-                    { col: "tags", score: 4 },
-                    { col: "cert_user_id", score: 4, usingJson: true },
-                    { col: "category", score: 4 },
-                    { col: "language", score: 3 },
-                    { col: "description", score: 2 }
-                    //{ col: "directory", score: 2, usingJson: true },
-                    //{ col: "date_added", score: 1 }
-				];
-
-				query = searchDbQuery(this, this.searchQuery || "", {
-					orderByScore: true,
-					id_col: "site_id",
-					select: "*",
-					searchSelects: searchSelects_ZeroSites,
-					table: "site",
-					join: "LEFT JOIN json USING (json_id)",
-					//where: languageWhere,
-					page: pageNum,
-					afterOrderBy: "date_added DESC",
-					limit: this.limit
-				});
-				this.doSearchQuery("ZeroSites", "1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", searchSelects_ZeroSites, query, setNextResults, subPageNum);
-
-				var searchSelects_0List = [
-					{ col: "title", score: 5 },
-                    { col: "body", score: 4 },
-                    //{ col: "cert_user_id", score: 3, usingJson: true }, // 0list puts this in keyvalue instead of json table for some reason
-                    //{ col: "directory", score: 2, usingJson: true },
-                    { col: "added", score: 1 }
-				];
-
-				/*query = searchDbQuery(this, this.searchQuery || "", {
-					orderByScore: true,
-					id_col: "topic_id",
-					select: "*",
-					searchSelects: searchSelects_0List,
-					table: "topic",
-					join: "LEFT JOIN json USING (json_id)",
-					//where: languageWhere,
-					page: pageNum,
-					afterOrderBy: "added DESC",
-					limit: this.limit
-				});
-				this.doSearchQuery("0List", "186THqMWuptrZxq1rxzpguAivK3Bs6z84o", searchSelects_0List, query, setNextResults, subPageNum);*/
-
-				var searchSelects_ZeroTalk = [
-					{ col: "title", score: 5 },
-                    { col: "body", score: 4 },
-					//{ skip: !app.userInfo || !app.userInfo.auth_address, col: "bookmarkCount", select: this.subQueryBookmarks(), inSearchMatchesAdded: false, inSearchMatchesOrderBy: true, score: 6 } // TODO: Rename inSearchMatchesAdded, and isSearchMatchesOrderBy
-				];
-
-				query = searchDbQuery(this, this.searchQuery || "", {
-					orderByScore: true,
-                    id_col: "topic_id",
-                    select: `topic.*, json.directory,
-                        topic.topic_id || '_' || topic_creator_content.directory AS row_topic_uri,
-                        topic_creator_user.value AS topic_creator_user_name,
-                        CASE WHEN MAX(comment.added) IS NULL THEN topic.added ELSE MAX(comment.added) END as last_action`,
-                    searchSelects: searchSelects_ZeroTalk,
-                    table: "topic",
-                    join: `LEFT JOIN json USING (json_id)
-                        LEFT JOIN json AS topic_creator_content ON (topic_creator_content.directory = json.directory AND topic_creator_content.file_name = 'content.json')
-                        LEFT JOIN keyvalue AS topic_creator_user ON (topic_creator_user.json_id = topic_creator_content.json_id AND topic_creator_user.key = 'cert_user_id')
-                        LEFT JOIN comment ON (comment.topic_uri = row_topic_uri AND comment.added < ${Date.now()/1000+120})`,
-                    page: self.pageNum,
-                    afterOrderBy: `last_action DESC`,
-                    groupBy: "topic.topic_id, topic.json_id",
-                    having: `last_action < ${Date.now()/1000+120}`,
-					limit: this.limit
-				});
-				this.doSearchQuery("ZeroTalk", "1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT", searchSelects_ZeroTalk, query, setNextResults, subPageNum);
-
-				var searchSelects_GitCenter = [
-					{ col: "address", score: 5 },
-					{ col: "title", score: 5 },
-                    { col: "description", score: 4 },
-                    //{ col: "cert_user_id", score: 3, usingJson: true }, // 0list puts this in keyvalue instead of json table for some reason
-                    //{ col: "directory", score: 2, usingJson: true },
-                    { col: "date_added", score: 1 }
-				];
-
-				var searchSelects_ZeroExchange = [
-					{ col: "title", score: 5 },
-					{ col: "tags", score: 4 },
-					{ col: "body", score: 3 },
-					{ col: "date_added", score: 1 }
-				];
-
-
-				if (pageNum == 0 && this.searchQuery && (this.searchQuery[this.searchQuery.length - 1] == "?" || this.searchQuery.toLowerCase().startsWith("how") || this.searchQuery.toLowerCase().startsWith("where") || this.searchQuery.toLowerCase().startsWith("what") || this.searchQuery.toLowerCase().startsWith("when") || this.searchQuery.toLowerCase().startsWith("could") || this.searchQuery.toLowerCase().startsWith("who") || this.searchQuery.toLowerCase().startsWith("where") || this.searchQuery.toLowerCase().startsWith("why") || this.searchQuery.toLowerCase().startsWith("did") || this.searchQuery.toLowerCase().startsWith("do") || this.searchQuery.toLowerCase().startsWith("does"))) {
-					query = searchDbQuery(this, this.searchQuery || "", {
-						orderByScore: true,
-						id_col: "question_id",
-						select: "*",
-						searchSelects: searchSelects_ZeroExchange,
-						table: "questions",
-						join: "LEFT JOIN json USING (json_id)",
-						//where: languageWhere,
-						page: 0,
-						afterOrderBy: "date_added DESC",
-						limit: 1
-					});
-
-					page.cmd("as", ["1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", "dbQuery", [query]], function(results) {
-						self.zeroExchangeResults = results;
-					});
-				} else if (pageNum == 0 && this.searchQuery && this.searchQuery != "") {
-					query = searchDbQuery(this, this.searchQuery || "", {
-						orderByScore: true,
-						id_col: "address",
-						select: "*",
-						searchSelects: searchSelects_GitCenter,
-						table: "repo_index",
-						join: "LEFT JOIN json USING (json_id)",
-						//where: languageWhere,
-						page: 0,
-						afterOrderBy: "date_added ASC",
-						limit: 1
-					});
-
-					page.cmd("as", ["1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", "dbQuery", [query]], function(results) {
-						self.gitCenterResults = results;
-					});
+            	} else if (this.currentTab == "zites") {
+					this.getZiteResults(pageNum, subPageNum, setNextResults);
+					return;
+				} else if (this.currentTab == "video") {
+					this.getVideoResults(pageNum, subPageNum, setNextResults);
+					return;
 				}
-            },
+			},
             doSearchQuery: function(ziteName, address, searchSelects, query, setNextResults, subPageNum) {
             	var self = this;
 				var startTime = new Date();
@@ -517,6 +368,10 @@
 
 						if (results[i].address && results[i].address.startsWith('/')) {
 							results[i].address = results[i].substring(1);
+						}
+
+						for (var i = 0; i < results.length; i++) {
+							results[i].zite = ziteName;
 						}
 
 						/*if (results[i].address) {
@@ -609,7 +464,258 @@
 				} else {
 					page.cmd("dbQuery", [query], addResults);
 				}
-            },
+			},
+			getZiteResults: function(pageNum, subPageNum, setNextResults) {
+				var searchSelects_KxoZites = [
+					{ col: "title", score: 5 },
+					{ col: "domain", score: 5 },
+					{ col: "address", score: 5 },
+					{ col: "tags", score: 4 },
+					{ col: "category_slug", score: 4 },
+					{ col: "merger_category", score: 4 },
+					{ col: "creator", score: 3 },
+					{ col: "description", score: 2 },
+					//{ skip: !app.userInfo || !app.userInfo.auth_address, col: "bookmarkCount", select: this.subQueryBookmarks(), inSearchMatchesAdded: false, inSearchMatchesOrderBy: true, score: 6 } // TODO: Rename inSearchMatchesAdded, and isSearchMatchesOrderBy
+				];
+
+				var query = searchDbQuery(this, this.searchQuery || "", {
+					orderByScore: true,
+					id_col: "id",
+					select: "*",
+					searchSelects: searchSelects_KxoZites,
+					table: "zites",
+					join: "LEFT JOIN json USING (json_id)",
+					//where: languageWhere,
+					page: pageNum,
+					afterOrderBy: "date_added ASC",
+					limit: this.limit
+				});
+				this.doSearchQuery("KxoNetwork", "1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", searchSelects_KxoZites, query, setNextResults, subPageNum);
+
+				var searchSelects_ZeroSites = [
+					{ col: "title", score: 5 },
+                    { col: "address", score: 5 },
+                    { col: "tags", score: 4 },
+                    { col: "cert_user_id", score: 4, usingJson: true },
+                    { col: "category", score: 4 },
+                    { col: "language", score: 3 },
+                    { col: "description", score: 2 }
+                    //{ col: "directory", score: 2, usingJson: true },
+                    //{ col: "date_added", score: 1 }
+				];
+
+				// ZeroSites
+				if (this.isEnabled("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB")) {
+					query = searchDbQuery(this, this.searchQuery || "", {
+						orderByScore: true,
+						id_col: "site_id",
+						select: "*",
+						searchSelects: searchSelects_ZeroSites,
+						table: "site",
+						join: "LEFT JOIN json USING (json_id)",
+						//where: languageWhere,
+						page: pageNum,
+						afterOrderBy: "date_added DESC",
+						limit: this.limit
+					});
+					this.doSearchQuery("ZeroSites", "1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", searchSelects_ZeroSites, query, setNextResults, subPageNum);
+				}
+
+				var searchSelects_0List = [
+					{ col: "title", score: 5 },
+                    { col: "body", score: 4 },
+                    //{ col: "cert_user_id", score: 3, usingJson: true }, // 0list puts this in keyvalue instead of json table for some reason
+                    //{ col: "directory", score: 2, usingJson: true },
+                    { col: "added", score: 1 }
+				];
+
+				/*query = searchDbQuery(this, this.searchQuery || "", {
+					orderByScore: true,
+					id_col: "topic_id",
+					select: "*",
+					searchSelects: searchSelects_0List,
+					table: "topic",
+					join: "LEFT JOIN json USING (json_id)",
+					//where: languageWhere,
+					page: pageNum,
+					afterOrderBy: "added DESC",
+					limit: this.limit
+				});
+				this.doSearchQuery("0List", "186THqMWuptrZxq1rxzpguAivK3Bs6z84o", searchSelects_0List, query, setNextResults, subPageNum);*/
+
+				var searchSelects_ZeroTalk = [
+					{ col: "title", score: 5 },
+                    { col: "body", score: 4 },
+					//{ skip: !app.userInfo || !app.userInfo.auth_address, col: "bookmarkCount", select: this.subQueryBookmarks(), inSearchMatchesAdded: false, inSearchMatchesOrderBy: true, score: 6 } // TODO: Rename inSearchMatchesAdded, and isSearchMatchesOrderBy
+				];
+
+				// ZeroTalk
+				if (this.isEnabled("1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT")) {
+					query = searchDbQuery(this, this.searchQuery || "", {
+						orderByScore: true,
+						id_col: "topic_id",
+						select: `topic.*, json.directory,
+							topic.topic_id || '_' || topic_creator_content.directory AS row_topic_uri,
+							topic_creator_user.value AS topic_creator_user_name,
+							CASE WHEN MAX(comment.added) IS NULL THEN topic.added ELSE MAX(comment.added) END as last_action`,
+						searchSelects: searchSelects_ZeroTalk,
+						table: "topic",
+						join: `LEFT JOIN json USING (json_id)
+							LEFT JOIN json AS topic_creator_content ON (topic_creator_content.directory = json.directory AND topic_creator_content.file_name = 'content.json')
+							LEFT JOIN keyvalue AS topic_creator_user ON (topic_creator_user.json_id = topic_creator_content.json_id AND topic_creator_user.key = 'cert_user_id')
+							LEFT JOIN comment ON (comment.topic_uri = row_topic_uri AND comment.added < ${Date.now()/1000+120})`,
+						page: self.pageNum,
+						afterOrderBy: `last_action DESC`,
+						groupBy: "topic.topic_id, topic.json_id",
+						having: `last_action < ${Date.now()/1000+120}`,
+						limit: this.limit
+					});
+					this.doSearchQuery("ZeroTalk", "1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT", searchSelects_ZeroTalk, query, setNextResults, subPageNum);
+				}
+
+				var searchSelects_GitCenter = [
+					{ col: "address", score: 5 },
+					{ col: "title", score: 5 },
+                    { col: "description", score: 4 },
+                    //{ col: "cert_user_id", score: 3, usingJson: true }, // 0list puts this in keyvalue instead of json table for some reason
+                    //{ col: "directory", score: 2, usingJson: true },
+                    { col: "date_added", score: 1 }
+				];
+
+				var searchSelects_ZeroExchange = [
+					{ col: "title", score: 5 },
+					{ col: "tags", score: 4 },
+					{ col: "body", score: 3 },
+					{ col: "date_added", score: 1 }
+				];
+
+
+				if (pageNum == 0 && this.searchQuery && (this.searchQuery[this.searchQuery.length - 1] == "?" || this.searchQuery.toLowerCase().startsWith("how") || this.searchQuery.toLowerCase().startsWith("where") || this.searchQuery.toLowerCase().startsWith("what") || this.searchQuery.toLowerCase().startsWith("when") || this.searchQuery.toLowerCase().startsWith("could") || this.searchQuery.toLowerCase().startsWith("who") || this.searchQuery.toLowerCase().startsWith("where") || this.searchQuery.toLowerCase().startsWith("why") || this.searchQuery.toLowerCase().startsWith("did") || this.searchQuery.toLowerCase().startsWith("do") || this.searchQuery.toLowerCase().startsWith("does")) && this.isEnabled("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W")) { // ZeroExchange
+					var newSearchQuery = (this.searchQuery || "").replace(/how( to)?/ig, "").replace(/where/ig, "").replace(/what/ig, "").replace(/when/ig, "").replace(/do/ig, "").replace(/did/ig, "").replace(/does/ig, "").replace(/could/ig, "").replace(/who/ig, "").replace(/why/ig, "").replace(/\?/g, "");
+					query = searchDbQuery(this, newSearchQuery || "", {
+						orderByScore: true,
+						id_col: "question_id",
+						select: "*",
+						searchSelects: searchSelects_ZeroExchange,
+						table: "questions",
+						join: "LEFT JOIN json USING (json_id)",
+						//where: languageWhere,
+						page: 0,
+						afterOrderBy: "date_added DESC",
+						limit: 1
+					});
+
+					page.cmd("as", ["1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", "dbQuery", [query]], function(results) {
+						self.zeroExchangeResults = results;
+					});
+				} else if (pageNum == 0 && this.searchQuery && this.searchQuery != "" && this.isEnabled("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t")) { // GitCenter
+					query = searchDbQuery(this, this.searchQuery || "", {
+						orderByScore: true,
+						id_col: "address",
+						select: "*",
+						searchSelects: searchSelects_GitCenter,
+						table: "repo_index",
+						join: "LEFT JOIN json USING (json_id)",
+						//where: languageWhere,
+						page: 0,
+						afterOrderBy: "date_added ASC",
+						limit: 1
+					});
+
+					page.cmd("as", ["1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", "dbQuery", [query]], function(results) {
+						self.gitCenterResults = results;
+					});
+				}
+			},
+			getKxoIdResults: function(pageNum, subPageNum, setNextResults) {
+				var searchSelects_KxoIds = [
+					{ col: "username", score: 5 },
+					{ col: "address", score: 4 }
+				];
+
+				var query = searchDbQuery(this, this.searchQuery || "", {
+					orderByScore: true,
+					id_col: "id",
+					select: "*",
+					searchSelects: searchSelects_KxoIds,
+					table: "ids",
+					page: pageNum,
+					//afterOrderBy: "date_added ASC",
+					limit: this.limit
+				});
+
+				this.doSearchQuery("KxoId", "self", searchSelects_KxoIds, query, setNextResults, subPageNum);
+			},
+			getVideoResults: function(pageNum, subPageNum, setNextResults) {
+				// KxoVid
+				if (this.isEnabled("14c5LUN73J7KKMznp9LvZWkxpZFWgE1sDz")) {
+					var searchSelects = [
+						{ col: "title", score: 5 },
+						{ col: "description", score: 4 },
+						{ col: "tags", score: 2 },
+					];
+
+					var query = searchDbQuery(this, this.searchQuery || "", {
+						 orderByScore: true,
+						id_col: "video_id",
+						select: "videos.*, videos_json.directory, videos_json.site, videos_json.cert_user_id, channels.name as channel_name",
+						searchSelects: searchSelects,
+						table: "videos",
+						join: `LEFT JOIN json as videos_json USING (json_id)
+								LEFT JOIN json as channels_json ON channels_json.directory=videos_json.directory AND channels_json.site="1HmJfQqTsfpdRinx3m8Kf1ZdoTzKcHfy2F"
+								LEFT JOIN channels ON channels.channel_id=videos.ref_channel_id AND channels.json_id=channels_json.json_id`,
+						afterOrderBy: "date_added ASC",
+						page: pageNum,
+						limit: this.limit
+					});
+
+					this.doSearchQuery("KxoVid", "14c5LUN73J7KKMznp9LvZWkxpZFWgE1sDz", searchSelects, query, setNextResults, subPageNum);
+				}
+
+				// KopyKate Big
+				if (this.isEnabled("18Pfr2oswXvD352BbJvo59gZ3GbdbipSzh")) {
+					var searchSelects = [
+						{ col: "title", score: 5 },
+						{ col: "description", score: 4 },
+						{ col: "category", score: 2 },
+					];
+
+					var query = searchDbQuery(this, this.searchQuery || "", {
+						orderByScore: true,
+						id_col: "date_added",
+						select: "*",
+						searchSelects: searchSelects,
+						table: "file",
+						//join: ``,
+						afterOrderBy: "date_added ASC",
+						page: pageNum,
+						limit: this.limit
+					});
+
+					this.doSearchQuery("KopyKate Big", "18Pfr2oswXvD352BbJvo59gZ3GbdbipSzh", searchSelects, query, setNextResults, subPageNum);
+				}
+			},
+			// Returns whether CORS permission enabled for given zite address
+			isEnabled: function(address) {
+				if (!this.siteInfo) {
+					console.log("Error: Cannot determine if " + address + " is enabled.");
+					return false;
+				}
+
+				for (var i in this.siteInfo.settings.permissions) {
+					var corsPerm = this.siteInfo.settings.permissions[i];
+					var zite_address = corsPerm.replace("Cors:", "");
+
+					if (zite_address == address) {
+						console.log(address + " is Enabled!");
+						return true;
+					}
+				}
+
+				console.log(address + " is not Enabled!");
+
+				return false;
+			},
 			goto: function(to) {
 				Router.navigate(to);
 			},
@@ -646,6 +752,8 @@
 
 				if (tabName == "kxoids") {
 					this.limit = 12; // 24
+				} else if (tabName == "video") {
+					this.limit = 6;
 				} else {
 					this.limit = 4; // 8
 				}

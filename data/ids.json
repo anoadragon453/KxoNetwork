@@ -258,6 +258,132 @@
 			"address": "1NqzQQBkQk46TnsYjNYeFHkgwwW1VY4CQP",
 			"signature": "HALMvkp/qWltzOT+KpJ5Q8/vcco/JxvIqLKOiVjY4ngVFGIe+AOOMQVMNN8lIZ6UhQJjqH+lNVb3Y/LSrc8iyME=",
 			"date_added": 1539821154742
+		},
+		{
+			"id": 1539930988487,
+			"username": "schiz0",
+			"address": "13i223c4P7HfiKEu9cxEGXptQ77i8JEs26",
+			"signature": "HAsQauguFuvP7/8H53fpFxukMBx2zK4oQMr8nO3+jDepRSXEgmCn6j7FHUlILqpZAmlM3k2dfRnCNDm2cARQmrI=",
+			"date_added": 1539930988487
+		},
+		{
+			"id": 1539978923651,
+			"username": "daniellmesquita",
+			"address": "1AKruhEAPeZofFdnNoox78Y5rEtvHmbGdX",
+			"signature": "HF5pfA6dSD8+WtDG6otgQ9dskmDPwUcg3q3ZiK3G0kjdLv3IxuRBZXLLwGDw+MKk4wm8wfH5nWNAYZN0AcJ43Sc=",
+			"date_added": 1539978923651
+		},
+		{
+			"id": 1540222002885,
+			"username": "christianity",
+			"address": "175eBjUz2wSGcTyguAURsAjuUQAizcCGmX",
+			"signature": "HP1hD+b0iY1tvaB8d8I4oItuVjhBgEnVCAtsdCr3x1iXVr4yLy+wiIFbNnBhF6KCOd0nNWPa+cGx+waiNnTXBng=",
+			"date_added": 1540222002885
+		},
+		{
+			"id": 1540222387650,
+			"username": "coinbundle",
+			"address": "1Dginfdo6kAPcSR5m4C9ooUyicZLUBqUSz",
+			"signature": "GxGb6RWcxLlocTLmjCl6PQ3LCH1jUoTKFMJ9Rtanb78ePm/YWJGvA2juji5JYYzSv2CRronVXNoAEMqkdCG8Ha0=",
+			"date_added": 1540222387650
+		},
+		{
+			"id": 1540222517408,
+			"username": "framework",
+			"address": "1EB8EGCWstMLFaXh2oN5x7YMVjpEf3B7JX",
+			"signature": "G6L1W9QNXTMkXeSzG4osKlpn3QCLH51TZaUAVLrdzsm1NKKLlFEnC45YHSMI9oCMfxee2iouy/YRUJyLjrrDaiw=",
+			"date_added": 1540222517408
+		},
+		{
+			"id": 1540222602784,
+			"username": "lgbt",
+			"address": "13WwwWoMsBT2DTzwxgBeL6LNdGKhPtiTjj",
+			"signature": "GysLvFESBMmQ1cR0T7KuA1eZW7VuW5p69P0prZULSX0oDuLTgucLYAl/iVSzFsfwSgAOCNrKlh1lcpCA6t0sqLE=",
+			"date_added": 1540222602784
+		},
+		{
+			"id": 1540222693730,
+			"username": "mirror",
+			"address": "1P4ea5by7TxFgnL1Jjbtc6QWMF3WCq2qnK",
+			"signature": "HB0fIo86P3uJwbQ1BOfK7TurrgY31LhxpLO1lDtsMVL+OI3UfRhPHDA/2xLIhfheVDd7d4kRl+1qiMtumCHcrm0=",
+			"date_added": 1540222693730
+		},
+		{
+			"id": 1540222782512,
+			"username": "peeper",
+			"address": "1Q5FJLnrSaXujkHQhvX3mcsRc8Yp9m7Hpm",
+			"signature": "G4wFwveHL3LqY5CDQzenLaaffGKvU9ekx2mkQHDFXkZXAcLjUJaTbW0f9lwARa5ABUmwHIyqNXMY6OhZQSSzGWk=",
+			"date_added": 1540222782512
+		},
+		{
+			"id": 1540222931916,
+			"username": "plasmmer",
+			"address": "1osCYBHySLt4izHjYExmrvTBA9DbawwXo",
+			"signature": "G2p/Oan7JHOE42mPt2tY/8oe/panK6M72WfhxKZWxmsTTH46s5/oWtKrZm7kv/FM1EW2q+2QazzHd0Ti9rRrzMY=",
+			"date_added": 1540222931916
+		},
+		{
+			"id": 1540223018231,
+			"username": "screens",
+			"address": "1Kcd2d3G7fm8xEedfYb5w11zpDCtPmgeno",
+			"signature": "G3QXgYmLcJdfBv/Ccp7MEKV4W1Z+ZSYQ+y+G1CMffx3HHsGg/JccPn11/qR0lzdRlrHldZpjho1gx94AXSNIU70=",
+			"date_added": 1540223018231
+		},
+		{
+			"id": 1540223076505,
+			"username": "zeronet",
+			"address": "18FjMho7JaBCRieQviWkn9ZRHVmcFAKQGD",
+			"signature": "G6eltpmFw+vx9xsJbIPBVNQKaKNmuMJKi8/nnxiiGriMRSmW0xAsZ/DAdyh6KWa/qLb3Au1ZrX7R3/iJw7uGAZs=",
+			"date_added": 1540223076505
+		},
+		{
+			"id": 1540223166359,
+			"username": "zeronews",
+			"address": "1NDb5fE28FwL5R6RAtbQ66r7goFY1N9Mm",
+			"signature": "HDCsshDnUMOGxjIA0Oc3gyrSQJ/BUn51jU+w8UIWrvnZbGki19AfCumqSRtdJ7yjdDghAa8C3iYTMwdIzJL3Q5g=",
+			"date_added": 1540223166359
+		},
+		{
+			"id": 1540223649932,
+			"username": "net",
+			"address": "1Mtqb4agcUPqq4zd5seXwhcGai7UZ5mbPC",
+			"signature": "Gz7tTgDmMy7Qot/qBF4XVoKVf+WXNYqEjLQlGSoqJG8RNxVaCaTKXrIxOXwk98CKn2mPgCYkJWXnmUVSy1bfjSg=",
+			"date_added": 1540223649932
+		},
+		{
+			"id": 1540273912600,
+			"username": "cloudysocks",
+			"address": "1HDfXo7jvbhjvdE6MdAEAQB1oaF13183jq",
+			"signature": "G0RHZZMxQXS7BqD6/gy/FvmgE967x+hhBGStAQtI0MpPDwd5XQYOI6Tb+CYZOilxlRGddN2OPqrlWhsiyGU6+VA=",
+			"date_added": 1540273912600
+		},
+		{
+			"id": 1540349930094,
+			"username": "nekololi",
+			"address": "1BY7c1wMEsNXUKCWd5jC3jxkGb8PvACsrj",
+			"signature": "HJBv7UfgYeRkW8TQGoAZBE8icjJVjm0aUNZVPys+B0Q6cnHIodal46NwvbU/hff4RAxbtxqkFA5OzKu8FrDll9s=",
+			"date_added": 1540349930094
+		},
+		{
+			"id": 1540566538062,
+			"username": "eightyfour",
+			"address": "1BJqPMz3Qeh98pc4DzX6jG653zP2j2KQWi",
+			"signature": "G4z1Ngzbdb6x3uBCNDSMhadZAiz6Tr/OKBmEchF7T2DwX6EpzNU4BYXoHPGdp0uHANjbTCKZmDK0O8Km3JhLAXA=",
+			"date_added": 1540566538062
+		},
+		{
+			"id": 1540715339122,
+			"username": "zosc",
+			"address": "184BsWoDziwLWeayW2g184qkxY8qLYyyAE",
+			"signature": "HMQ8hrlKs7ZT2eSNS3jyVkIH3KcNRex4y/2ClFVHuwUGWkflf4/rY+ApKlU8ttI4WsaVHSyF/jVKhDfjlRFFDdY=",
+			"date_added": 1540715339122
+		},
+		{
+			"id": 1540750144802,
+			"username": "pexo",
+			"address": "1EaqtUWxtvGViwr84o9VP8K3Sbwh8vRi25",
+			"signature": "GyYp0asf4UehRInXlvOTcz79I0So9EEgaWJ1oEDMy2ezaIcZbbeij4909GpwAoWKIisWhtZHICeHTranX+QNYAs=",
+			"date_added": 1540750144802
 		}
 	]
 }
