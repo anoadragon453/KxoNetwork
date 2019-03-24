@@ -114,7 +114,7 @@
 								waitingForResponse = false;
 								self.loading = false;
 							} else {
-								page.cmd("peerValid", [message.params.hash]);
+								page.cmd("peerValid", [messageParams.hash]);
 							}
 					//	});
 				} else if (messageParams.message.startsWith('success|')) {
@@ -141,11 +141,12 @@
 								// Navigate to homepage
 								self.goto('');
 							} else {
-								page.cmd("peerValid", [message.params.hash]);
+								page.cmd("peerValid", [messageParams.hash]);
 							}
 					//	});
 				} else {
-					page.cmd("peerValid", [message.params.hash]);
+					page.cmd("peerValid", [messageParams.hash]);
+					//console.log(messageParams);
 				}
 			},
 			goto: function(to) {
@@ -162,7 +163,8 @@
 				}
 				var username = this.username.toLowerCase();
 				if (username === "") {
-					username = page.siteInfo.auth_address.slice(0, 13);
+					//username = page.siteInfo.auth_address.slice(0, 13);
+					page.cmd("wrapperNotification", ["error", "Your username cannot be blank."]);
 				}
 				// TODO: Check that username doesn't have space.
 

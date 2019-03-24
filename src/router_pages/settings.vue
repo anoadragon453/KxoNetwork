@@ -44,6 +44,7 @@
 					{ title: "ZeroExchange", address: "1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", enabled: false },
 					{ title: "KxoVid", address: "14c5LUN73J7KKMznp9LvZWkxpZFWgE1sDz", enabled: false },
 					{ title: "KopyKate Big", address: "18Pfr2oswXvD352BbJvo59gZ3GbdbipSzh", enabled: false },
+					{ title: "ZeroUp", address: "1uPLoaDwKzP6MCGoVzw48r4pxawRBdmQc", enabled: false },
                 ]
 			};
 		},

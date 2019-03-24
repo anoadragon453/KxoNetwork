@@ -16,8 +16,8 @@
 						<v-tab key="kxoids" @click="changeTab('kxoids')">KxoIds</v-tab>
 						<!--<v-tab key="audio" @click="changeTab('audio')">Audio</v-tab>-->
 						<v-tab key="video" @click="changeTab('video')">Video</v-tab>
-						<v-tab key="posts">Posts</v-tab>
-						<v-tab key="files">Files</v-tab>
+						<!--<v-tab key="posts">Posts</v-tab>-->
+						<v-tab key="files" @click="changeTab('files')">Files</v-tab>
 					</v-tabs>
 				</v-toolbar>
 			</v-card>
@@ -104,14 +104,35 @@
 					<v-flex xs12 sm6>
 						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
-							<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid" : (result.zite == "KopyKate Big" ? "KopyKate Big" : "")) }}</small></div>
+							<div style="text-align: center;"><small>{{ result.zite }}</small></div>
 							<!--<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>-->
 						</v-card>
 					</v-flex>
 					<v-flex xs12 sm6>
 						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
-							<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid" : (result.zite == "KopyKate Big" ? "KopyKate Big" : "")) }}</small></div>
+							<div style="text-align: center;"><small>{{ result.zite }}</small></div>
+							<!--<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>-->
+						</v-card>
+					</v-flex>
+				</v-layout>
+
+				<!-- Files -->
+				<v-layout row wrap v-if="currentTab == 'files'">
+					<v-flex xs12 style="padding: 0;"><div style="margin-left: 15px; margin-right: 15px;">Time: {{ searchTime / 1000.0 }} seconds</div></v-flex>
+
+					<v-flex xs12 sm6>
+						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+							<div style="text-align: center;"><small>{{ result.zite }}</small></div>
+							<!--<v-btn @click.prevent="pinFile(result.zite, result.address)"></v-btn>-->
+							<!--<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>-->
+						</v-card>
+					</v-flex>
+					<v-flex xs12 sm6>
+						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
+							<div style="text-align: center;"><small>{{ result.zite }}</small></div>
 							<!--<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>-->
 						</v-card>
 					</v-flex>
@@ -333,6 +354,9 @@
 				} else if (this.currentTab == "video") {
 					this.getVideoResults(pageNum, subPageNum, setNextResults);
 					return;
+				} else if (this.currentTab == "files") {
+					this.getFileResults(pageNum, subPageNum, setNextResults);
+					return;
 				}
 			},
             doSearchQuery: function(ziteName, address, searchSelects, query, setNextResults, subPageNum) {
@@ -364,15 +388,19 @@
 						if (ziteName == "ZeroTalk") {
 							//console.log(results[i]);
 							results[i].address = address + "/?Topic:" + results[i].row_topic_uri;
+						} else if (ziteName == "ZeroUp") {
+							results[i].address = "1uPLoaDwKzP6MCGoVzw48r4pxawRBdmQc/data/users/" + results[i].directory + "/" + results[i].file_name;
+						} else if (ziteName == "KxoVid") {
+							results[i].address = "14c5LUN73J7KKMznp9LvZWkxpZFWgE1sDz/?/channel/" + results[i].directory.replace(/data\/users\//ig, "") + "/" + results[i].ref_channel_id + "/v/" + results[i].video_id;
+						} else if (ziteName == "KopyKate Big") {
+							results[i].address = "18Pfr2oswXvD352BbJvo59gZ3GbdbipSzh/?Video=" + results[i].date_added + "_" + results[i].directory.replace(/data\/users\//ig, "");
 						}
 
 						if (results[i].address && results[i].address.startsWith('/')) {
 							results[i].address = results[i].substring(1);
 						}
 
-						for (var i = 0; i < results.length; i++) {
-							results[i].zite = ziteName;
-						}
+						results[i].zite = ziteName;
 
 						/*if (results[i].address) {
 							results[i].address = results[i].address.replace(/)
@@ -686,13 +714,38 @@
 						select: "*",
 						searchSelects: searchSelects,
 						table: "file",
-						//join: ``,
+						join: `LEFT JOIN json using (json_id)`,
 						afterOrderBy: "date_added ASC",
 						page: pageNum,
 						limit: this.limit
 					});
 
 					this.doSearchQuery("KopyKate Big", "18Pfr2oswXvD352BbJvo59gZ3GbdbipSzh", searchSelects, query, setNextResults, subPageNum);
+				}
+			},
+			getFileResults: function(pageNum, subPageNum, setNextResults) {
+				if (this.isEnabled("1uPLoaDwKzP6MCGoVzw48r4pxawRBdmQc")) {
+					var searchSelects = [
+						{ col: "title", score: 5 },
+						{ col: "file_name", score: 4 },
+						{ col: "cert_user_id", score: 3, usingJson: true },
+						//{ col: "directory", score: 2, usingJson: true },
+						{ col: "date_added", score: 1 }
+					]
+
+					var query = searchDbQuery(this, this.searchQuery, {
+						orderByScore: true,
+						id_col: "date_added",
+						select: "*",
+						searchSelects: searchSelects,
+						table: "file",
+						join: "LEFT JOIN json USING (json_id)",
+						page: pageNum,
+						afterOrderBy: "date_added DESC",
+						limit: this.limit
+					});
+					
+					this.doSearchQuery("ZeroUp", "1uPLoaDwKzP6MCGoVzw48r4pxawRBdmQc", searchSelects, query, setNextResults, subPageNum);
 				}
 			},
 			// Returns whether CORS permission enabled for given zite address
@@ -754,6 +807,8 @@
 					this.limit = 12; // 24
 				} else if (tabName == "video") {
 					this.limit = 5;
+				} else if (tabName == "files") {
+					this.limit = 8;
 				} else {
 					this.limit = 4; // 8
 				}

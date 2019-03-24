@@ -8,3 +8,4 @@ node_modules/
 /content.json
 /merged-.*/*
 admin/
+0background.py

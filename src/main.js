@@ -172,6 +172,7 @@ class ZeroApp extends ZeroFrame {
 
 	onRequest(cmd, message) {
 		Router.listenForBack(cmd, message);
+		console.log(cmd + ": ", message);
 		if (cmd === "setSiteInfo") {
 			this.siteInfo = message.params;
 			app.siteInfo = message.params;
