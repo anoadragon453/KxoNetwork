@@ -20,6 +20,20 @@
 					</v-flex>
 				</v-layout>
 			</v-container>
+			<div style="margin-top: 10px;">
+				<v-divider style="margin-bottom: 10px;"></v-divider>
+				<strong>How to Install ZeroNet Plugins?</strong>
+				<p>
+					<ol>
+						<li>Download the zip file.</li>
+						<li>Unzip the folder contained in the zip file.</li>
+						<li>Move the folder into the <code>ZeroNetRoot\core\plugins</code> directory.</li>
+						<li>If the plugin folder starts with <code>Plugin-</code> or ends with <code>-master</code>, then it's likely
+						you should rename the folder to remove those.</li>
+						<li>Restart ZeroNet</li>
+					</ol>
+				</p>
+			</div>
 		</v-container>
 	</v-container>
 </template>

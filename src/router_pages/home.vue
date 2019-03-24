@@ -8,6 +8,9 @@
 			</v-card>
 		</v-container>
 		<v-container style="max-width: 900px;"> <!-- Search -->
+			<div style="text-align: center;">
+				<small><strong>Note:</strong> You can enable more zites to search by going to the <a href="./?/settings" v-on:click.prevent="goto('settings')">Settings</a> page.</small>
+			</div>
 			<v-card style="padding-left: 10px; padding-right: 10px; padding-top: 10px;">
 				<v-toolbar color="white" dense prominent extended flat>
 					<v-text-field prepend-icon="search" hide-details single-line clearable v-bind:placeholder="'Search ' + currentTab" style="margin-right: 5px; margin-left: 3px;" v-model="searchQuery" @keyup.enter="getResults()" @blur="getResults()"></v-text-field>
