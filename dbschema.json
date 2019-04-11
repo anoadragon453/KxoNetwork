@@ -4,7 +4,7 @@
     "version": 2,
     "maps": {
         "ids.json": {
-            "to_table": ["ids"]
+            "to_table": ["ids", "bots"]
         },
         "users/.+/data.json": {
             "to_table": ["plugins", "plugin_versions"]
@@ -31,11 +31,23 @@
                 ["address", "TEXT"],
                 ["username", "TEXT"],
                 ["signature", "TEXT"],
-                ["date_added", "TEXT"],
+                ["date_added", "INTEGER"],
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX id_key ON ids (json_id, id)", "CREATE INDEX id_username_address ON ids (username, address)"],
-            "schema_changed": 10
+            "schema_changed": 11
+        },
+        "bots": {
+            "cols": [
+                ["id", "INTEGER"],
+                ["address", "TEXT"],
+                ["username", "TEXT"],
+                ["signature", "TEXT"],
+                ["date_added", "INTEGER"],
+                ["json_id", "INTEGER REFERENCES json (json_id)"]
+            ],
+            "indexes": ["CREATE UNIQUE INDEX bot_key ON bots (json_id, id)", "CREATE INDEX bot_username_address ON bots (username, address)"],
+            "schema_changed": 2
         },
         "plugins": {
             "cols": [
@@ -45,11 +57,11 @@
                 ["gitcenteraddress", "TEXT"],
                 ["default_version_id", "INTEGER"],
                 ["date_updated", "TEXT"],
-                ["date_added", "TEXT"],
+                ["date_added", "INTEGER"],
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX plugin_key ON plugins (json_id, id)", "CREATE INDEX plugin_id_name_url ON plugins (id, name, default_version_id)"],
-            "schema_changed": 13
+            "schema_changed": 14
         },
         "plugin_versions": {
             "cols": [
@@ -58,11 +70,11 @@
                 ["version", "TEXT"],
                 ["file_download_url", "TEXT"],
                 ["prerelease", "BOOLEAN"],
-                ["date_added", "TEXT"],
+                ["date_added", "INTEGER"],
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX plugin_versions_key ON plugin_versions (json_id, id)"],
-            "schema_changed": 5
+            "schema_changed": 6
         }
     }
 }

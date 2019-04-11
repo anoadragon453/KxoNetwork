@@ -1,19 +1,32 @@
 <template>
 	<v-container fluid>
 		<v-container v-if="!isLoggedIn" style="padding-top: 7px; padding-bottom: 7px; max-width: 500px;"> <!-- Not Logged In -->
+			<v-card color="red" tile style="margin: 0; margin-bottom: 7px;" v-if="!serverInfo || !hasPeerMessage">
+				<v-card-text style="text-align: center;">
+					Please install the PeerMessage plugin. You can download and install it from the <a href="./?/plugins" @click.prevent="goto('plugins')">Plugin Store</a>
+				</v-card-text>
+			</v-card>
+
 			<v-card style="margin: 0;">
 				<v-card-text>
 					<v-text-field id="username" name="username" ref="usernameinput" label="Username" clearable required suffix="@kxoid.bit" v-model="username" :rules="getRules()"></v-text-field>
-					<v-btn @click="register()" :loading="loading">Create Id</v-btn>
+					<v-btn @click="register()" :loading="loading" :disabled="!hasPeerMessage">Create Id</v-btn>
 
-					<v-divider style="margin-top: 15px; margin-bottom: 15px;"></v-divider>
+					<v-divider style="margin-top: 15px;"></v-divider>
+					<v-subheader>What is KxoId?</v-subheader>
 
-					<p>KxoId is a semi-decentralized Id Provider for ZeroNet that offers unique usernames. It uses the <a href="#">PeerMessage plugin</a> created by @Git Center to broadcast user information over the ZeroNet network, where a set of "trusted clients" receive the messages, verify the usernames are unique, add the id information to the public database, and broadcast back the signatures created by the private key (which is only available to these trusted clients).</p>
+					<p>KxoId is a semi-decentralized (federated) Id Provider for ZeroNet that offers unique usernames. It uses the <a href="./?/plugins" @click.prevent="goto('plugins')">PeerMessage plugin</a> created by @Git Center to broadcast user information over the ZeroNet network, where a set of "trusted clients" receive the messages, verify the usernames are unique, add the id information to the public database, and broadcast back the signatures created by the private key (which is only available to these trusted clients).</p>
 
-					<v-divider style="margin-top: 15px; margin-bottom: 15px;"></v-divider>
+					<v-divider style="margin-top: 15px;"></v-divider>
+					<v-subheader>Supporting KxoId on Your Zite</v-subheader>
 
 					<p>For developers, you can support KxoId by adding this to the "cert_signers" of your users content.json file:</p>
 					<p>"kxoid.bit": ["{{ permissionaddress }}"]</p>
+
+					<v-divider style="margin-top: 15px;"></v-divider>
+					<v-subheader>Register Bot Ids</v-subheader>
+
+					<p>Registering an Id for a Bot? <a href="./?/create-bot-id" @click.prevent="goto('create-bot-id')">Click Here</a></p>
 				</v-card-text>
 			</v-card>
 		</v-container>
@@ -27,7 +40,7 @@
 	var Router = require("../libs/router.js");
 
 	module.exports = {
-		props: ["gettingUserInfo", "userInfo", "langTranslation"],
+		props: ["gettingUserInfo", "userInfo", "langTranslation", "serverInfo"],
 		name: "create-id",
 		data: () => {
 			return {
@@ -47,15 +60,30 @@
 				page.cmdp("wrapperNotification", ["info", "You are already logged in. You cannot create another id!"]);
 				this.goto('');
 			}
+
+			this.$emit('setcallback', "peerReceive", this.peerReceive);
 		},
 		mounted: function() {
 			var self = this;
-			this.$emit('setcallback', "peerReceive", this.peerReceive);
 		},
 		computed: {
 			isLoggedIn: function() {
 				if (this.userInfo == null) return false;
 				return this.userInfo.cert_user_id != null;
+			},
+			hasPeerMessage: function() {
+				console.log(this.serverInfo);
+				if (this.serverInfo.plugins.includes("Plugin-PeerMessage")
+					|| this.serverInfo.plugins.includes("Plugin-PeerMessage-master")
+					|| this.serverInfo.plugins.includes("PeerMessage")
+					|| this.serverInfo.plugins.includes("peermessage")
+					|| this.serverInfo.plugins.includes("PeerMessage-master")
+					|| this.serverInfo.plugins.includes("Plugin-PeerMessage-py3")
+					|| this.serverInfo.plugins.includes("PeerMessage-py3")
+					|| this.serverInfo.plugins.includes("peermessage-py3")) {
+					return true;
+				}
+				return false;
 			}
 		},
 		methods: {
@@ -88,7 +116,11 @@
 									{
 										console.log(page.siteInfo.auth_address);
 										// Check if already in db
-										page.cmd("dbQuery", ["SELECT * FROM ids WHERE address='" + page.siteInfo.auth_address + "'"], (results) => {
+										var query = `
+                                            SELECT * FROM bots WHERE address="${page.siteInfo.auth_address}"
+                                            	UNION SELECT * FROM ids WHERE address="${page.siteInfo.auth_address}"`;
+										page.cmd("dbQuery", [query], (results) => {
+											console.log("Results: ", results);
 											if (results.length > 0) {
 												page.cmdp("certAdd", [certname, "web", results[0].username, results[0].signature])
 													.then((res) => {
@@ -97,9 +129,15 @@
 														} else {
 															page.cmdp("certSelect", [[certname]]);
 														}
+														self.$refs["usernameinput"].validate(true);
+														waitingForResponse = false;
+														self.loading = false;
 													});
 											} else {
 												self.error = "That username is already taken or you have already signed up on this client.";
+												self.$refs["usernameinput"].validate(true);
+												waitingForResponse = false;
+												self.loading = false;
 											}
 										});
 										//self.error = "That username is already taken or you have already signed up on this client.";
@@ -157,6 +195,10 @@
 				return false;
 			},
 			register: function() {
+				if (!this.hasPeerMessage) {
+					page.cmdp("wrapperNotification", ["error", "You must have the PeerMessage plugin installed. Download and install from the Plugin Store."]);
+					return;
+				}
 				if (this.userInfo && this.userInfo.cert_user_id) {
 					alert("You already have a KxoId.");
 					return;

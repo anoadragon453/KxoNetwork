@@ -1,6 +1,6 @@
 <template>
 	<v-container fluid>
-		<v-container style="max-width: 700px;" v-if="userInfo">
+		<v-container style="max-width: 700px;">
 			<div style="display: block; margin-bottom: 10px;"><strong style="font-size: 1.2em;">Settings</strong></div>
             
             <div><em>CORS Searching</em></div>
@@ -73,16 +73,18 @@
 				}
 			}
 
-			this.$emit("setcallback", "updateSiteInfo", function() {
-				for (var i in this.siteInfo.settings.permissions) {
-					var corsPerm = this.siteInfo.settings.permissions[i];
+			this.$emit("setcallback", "update", function(userInfo, siteInfo) {
+				if (!siteInfo) return;
+				self.siteInfo = siteInfo;
+				for (var i in siteInfo.settings.permissions) {
+					var corsPerm = siteInfo.settings.permissions[i];
 					var address = corsPerm.replace("Cors:", "");
 
-					for (var i2 in this.zites) {
-						var zite = this.zites[i2];
+					for (var i2 in self.zites) {
+						var zite = self.zites[i2];
 						
 						if (address == zite.address) {
-							this.zites[i2].enabled = true;
+							self.zites[i2].enabled = true;
 						}
 					}
 				}

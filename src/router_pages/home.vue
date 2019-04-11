@@ -184,11 +184,11 @@
 					{ title: "ZPlace", address: "1D6f2CvDRhPeEeBAcmqGt3X9z2CkLpmv2V" },
 					{ title: "ThunderWave", address: "thunderwave.bit" },
 					{ title: "Kiwipedia", address: "1KiwiBCVBUcuypVm8FEmUW9YT6fJDXkN9r" },
-					{ title: "Zirch", address: "1SearchPd3khzLtsxTxKYhYUohk7c1QYd" },
 					{ title: "NullPaste", address: "1MgHVPCE1ve6QfKrgsqCURzRj72HrRWioz" },
 					{ title: "Sakana", address: "sakana.bit" },
 					{ title: "ZeroMedium", address: "ZeroMedium.bit" },
 					{ title: "Nopelist", address: "Styromaniac.blocklist.bit" },
+					{ title: "CodeR", address: "1CodEr7T9xNXSPcwbsvf5fHTqsixDMwDzL" }
 				]
 			};
 		},
@@ -675,7 +675,18 @@
 					limit: this.limit
 				});
 
+				var query2 = searchDbQuery(this, this.searchQuery || "", {
+					orderByScore: true,
+					id_col: "id",
+					select: "*",
+					searchSelects: searchSelects_KxoIds,
+					table: "bots",
+					page: pageNum,
+					limit: this.limit
+				});
+
 				this.doSearchQuery("KxoId", "self", searchSelects_KxoIds, query, setNextResults, subPageNum);
+				this.doSearchQuery("KxoId Bots", "self", searchSelects_KxoIds, query2, setNextResults, subPageNum);
 			},
 			getVideoResults: function(pageNum, subPageNum, setNextResults) {
 				// KxoVid
@@ -734,7 +745,7 @@
 						{ col: "cert_user_id", score: 3, usingJson: true },
 						//{ col: "directory", score: 2, usingJson: true },
 						{ col: "date_added", score: 1 }
-					]
+					];
 
 					var query = searchDbQuery(this, this.searchQuery, {
 						orderByScore: true,
@@ -807,7 +818,7 @@
 				this.currentTab = tabName;
 
 				if (tabName == "kxoids") {
-					this.limit = 12; // 24
+					this.limit = 10; // 24
 				} else if (tabName == "video") {
 					this.limit = 5;
 				} else if (tabName == "files") {

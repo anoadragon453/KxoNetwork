@@ -41,9 +41,9 @@ var Navbar = require("./vue_components/navbar.vue");
 var app = new Vue({
 	el: "#app",
 	template: `<div><v-app>
-			<component ref="navbar" :is="navbar" :user-info="userInfo" :site-info="siteInfo" :lang-translation="langTranslation"></component>
+			<component ref="navbar" :is="navbar" :server-info="serverInfo" :user-info="userInfo" :site-info="siteInfo" :lang-translation="langTranslation"></component>
 			<v-content>
-				<component ref="view" :is="currentView" v-on:setcallback="setCallback" v-on:get-user-info="getUserInfo()" :user-info="userInfo" :site-info="siteInfo" :getting-user-info="gettingUserInfo" :lang-translation="langTranslation"></component>
+				<component ref="view" :is="currentView" v-on:setcallback="setCallback" v-on:get-user-info="getUserInfo()" :server-info="serverInfo" :user-info="userInfo" :site-info="siteInfo" :getting-user-info="gettingUserInfo" :lang-translation="langTranslation"></component>
 			</v-content>
 		</v-app></div>`,
 	data: {
@@ -51,6 +51,7 @@ var app = new Vue({
 		currentView: null,
 		siteInfo: null,
 		userInfo: null,
+		serverInfo: null,
 		gettingUserInfo: true,
 		langTranslation: defaultLang,
 		peerReceiveCallback: null,
@@ -59,9 +60,11 @@ var app = new Vue({
 	},
 	methods: {
 		getUserInfo: function(f = null) {
-			page.cmd("dbQuery", ["SELECT * FROM ids WHERE address='" + this.siteInfo.auth_address + "'"], (results) => {
+			var query = `SELECT *, 'ids' AS table FROM ids WHERE address="${this.siteInfo.auth_address}" UNION SELECT *, 'bots' AS table FROM bots WHERE address="${this.siteInfo.auth_address}"`
+			page.cmd("dbQuery", [query], (results) => {
 				if (results.length > 0) {
-					page.cmdp("certAdd", [certname, "web", results[0].username, results[0].signature])
+					var type = results[0].table == "ids" ? "web" : "bot";
+					page.cmdp("certAdd", [certname, type, results[0].username, results[0].signature])
 						.then((res) => {
 						});
 				}
@@ -72,7 +75,7 @@ var app = new Vue({
                 this.userInfo = null;
 				//this.$emit("setuserinfo", this.userInfo);
 				//this.$emit("update");
-				app.callCallback("update", this.userInfo);
+				app.callCallback("update", this.userInfo, this.siteInfo);
                 return;
             }
 
@@ -122,7 +125,7 @@ var app = new Vue({
 				that.gettingUserInfo = false;
 				//that.$emit("setUserInfo", that.userInfo); // TODO: Not sure if I need this if I can pass in a function callback instead
 				//that.$emit("update", that.userInfo);
-				app.callCallback("update", that.userInfo);
+				app.callCallback("update", that.userInfo, that.siteInfo);
 				if (f !== null && typeof f === "function") f();
             });
 		},
@@ -185,12 +188,209 @@ class ZeroApp extends ZeroFrame {
 			} else {
 				this.cmd("peerValid", [message.params.hash]);
 			}
+
+			var messageParams = message.params;
+			if (messageParams.message.startsWith('search|')) {
+				var parts = messageParams.split('|');
+				var zite = parts[1];
+				var query = parts[2];
+
+				if (isEnabled(zite)) {
+					doSearch(zite, query, 1, 8, (results) => {
+
+					});
+				}
+			}
 		}
 
 		if (message.params.event && message.params.event[0] === "file_done") {
 			//app.$emit("update");
-			app.callCallback("update");
+			app.callCallback("update", app.userInfo, app.siteInfo);
 		}
+	}
+
+	// Returns whether CORS permission enabled for given zite address
+	isEnabled(address) {
+		if (!app.siteInfo) {
+			//console.log("Error: Cannot determine if " + address + " is enabled.");
+			return false;
+		}
+
+		for (var i in app.siteInfo.settings.permissions) {
+			var corsPerm = app.siteInfo.settings.permissions[i];
+			var zite_address = corsPerm.replace("Cors:", "");
+
+			if (zite_address == address) {
+				console.log(address + " is Enabled!");
+				return true;
+			}
+		}
+
+		console.log(address + " is not Enabled!");
+
+		return false;
+	}
+
+	doSearch(ziteAddress, searchQuery, pageNum = 1, limit = 8, f = null) {
+		var searchZites = {
+			"1uPLoaDwKzP6MCGoVzw48r4pxawRBdmQc": { name: "ZeroUp", searchOptions: {
+					orderByScore: true,
+					id_col: "date_added",
+					select: "*",
+					searchSelects: [
+						{ col: "title", score: 5 },
+						{ col: "file_name", score: 4 },
+						{ col: "cert_user_id", score: 3, usingJson: true },
+						//{ col: "directory", score: 2, usingJson: true },
+						{ col: "date_added", score: 1 }
+					],
+					table: "file",
+					join: "LEFT JOIN json USING (json_id)",
+					page: pageNum,
+					afterOrderBy: "date_added DESC",
+					limit: limit
+				} },
+			"18Pfr2oswXvD352BbJvo59gZ3GbdbipSzh": { name: "KopyKate Big", searchOptions: {
+					orderByScore: true,
+					id_col: "date_added",
+					select: "*",
+					searchSelects: [
+						{ col: "title", score: 5 },
+						{ col: "description", score: 4 },
+						{ col: "category", score: 2 },
+					],
+					table: "file",
+					join: `LEFT JOIN json using (json_id)`,
+					afterOrderBy: "date_added ASC",
+					page: pageNum,
+					limit: limit
+				} },
+			"1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E": { name: "Important Zites", searchOptions: {
+				orderByScore: true,
+				id_col: "id",
+				select: "*",
+				searchSelects: [
+					{ col: "title", score: 5 },
+					{ col: "domain", score: 5 },
+					{ col: "address", score: 5 },
+					{ col: "tags", score: 4 },
+					{ col: "category_slug", score: 4 },
+					{ col: "merger_category", score: 4 },
+					{ col: "creator", score: 3 },
+					{ col: "description", score: 2 },
+					//{ skip: !app.userInfo || !app.userInfo.auth_address, col: "bookmarkCount", select: this.subQueryBookmarks(), inSearchMatchesAdded: false, inSearchMatchesOrderBy: true, score: 6 } // TODO: Rename inSearchMatchesAdded, and isSearchMatchesOrderBy
+				],
+				table: "zites",
+				join: "LEFT JOIN json USING (json_id)",
+				//where: languageWhere,
+				page: pageNum,
+				afterOrderBy: "date_added ASC",
+				limit: limit
+			} },
+			"1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB": { name: "ZeroSites", searchOptions: {
+				orderByScore: true,
+				id_col: "site_id",
+				select: "*",
+				searchSelects: [
+					{ col: "title", score: 5 },
+                    { col: "address", score: 5 },
+                    { col: "tags", score: 4 },
+                    { col: "cert_user_id", score: 4, usingJson: true },
+                    { col: "category", score: 4 },
+                    { col: "language", score: 3 },
+                    { col: "description", score: 2 }
+                    //{ col: "directory", score: 2, usingJson: true },
+                    //{ col: "date_added", score: 1 }
+				],
+				table: "site",
+				join: "LEFT JOIN json USING (json_id)",
+				//where: languageWhere,
+				page: pageNum,
+				afterOrderBy: "date_added DESC",
+				limit: limit
+			} },
+			"1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT": { name: "ZeroTalk", searchOptions: {
+				orderByScore: true,
+				id_col: "topic_id",
+				select: `topic.*, json.directory,
+					topic.topic_id || '_' || topic_creator_content.directory AS row_topic_uri,
+					topic_creator_user.value AS topic_creator_user_name,
+					CASE WHEN MAX(comment.added) IS NULL THEN topic.added ELSE MAX(comment.added) END as last_action`,
+				searchSelects: [
+					{ col: "title", score: 5 },
+                    { col: "body", score: 4 },
+				],
+				table: "topic",
+				join: `LEFT JOIN json USING (json_id)
+					LEFT JOIN json AS topic_creator_content ON (topic_creator_content.directory = json.directory AND topic_creator_content.file_name = 'content.json')
+					LEFT JOIN keyvalue AS topic_creator_user ON (topic_creator_user.json_id = topic_creator_content.json_id AND topic_creator_user.key = 'cert_user_id')
+					LEFT JOIN comment ON (comment.topic_uri = row_topic_uri AND comment.added < ${Date.now()/1000+120})`,
+				page: self.pageNum,
+				afterOrderBy: `last_action DESC`,
+				groupBy: "topic.topic_id, topic.json_id",
+				having: `last_action < ${Date.now()/1000+120}`,
+				limit: limit
+			} },
+			"1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W": { name: "ZeroExchange", searchOptions: {
+				orderByScore: true,
+				id_col: "question_id",
+				select: "*",
+				searchSelects: [
+					{ col: "title", score: 5 },
+					{ col: "tags", score: 4 },
+					{ col: "body", score: 3 },
+					{ col: "date_added", score: 1 }
+				],
+				table: "questions",
+				join: "LEFT JOIN json USING (json_id)",
+				//where: languageWhere,
+				page: 0,
+				afterOrderBy: "date_added DESC",
+				limit: limit
+			} },
+			"1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t": { name: "GitCenter", searchOptions: {
+				orderByScore: true,
+				id_col: "address",
+				select: "*",
+				searchSelects: [
+					{ col: "address", score: 5 },
+					{ col: "title", score: 5 },
+                    { col: "description", score: 4 },
+                    //{ col: "cert_user_id", score: 3, usingJson: true }, // 0list puts this in keyvalue instead of json table for some reason
+                    //{ col: "directory", score: 2, usingJson: true },
+                    { col: "date_added", score: 1 }
+				],
+				table: "repo_index",
+				join: "LEFT JOIN json USING (json_id)",
+				//where: languageWhere,
+				page: 0,
+				afterOrderBy: "date_added ASC",
+				limit: limit
+			} },
+			"14c5LUN73J7KKMznp9LvZWkxpZFWgE1sDz": { name: "KxoVid", searchOptions: {
+			 	orderByScore: true,
+				id_col: "video_id",
+				select: "videos.*, videos_json.directory, videos_json.site, videos_json.cert_user_id, channels.name as channel_name",
+				searchSelects: [
+					{ col: "title", score: 5 },
+					{ col: "description", score: 4 },
+					{ col: "tags", score: 2 },
+				],
+				table: "videos",
+				join: `LEFT JOIN json as videos_json USING (json_id)
+						LEFT JOIN json as channels_json ON channels_json.directory=videos_json.directory AND channels_json.site="1HmJfQqTsfpdRinx3m8Kf1ZdoTzKcHfy2F"
+						LEFT JOIN channels ON channels.channel_id=videos.ref_channel_id AND channels.json_id=channels_json.json_id`,
+				afterOrderBy: "date_added ASC",
+				page: pageNum,
+				limit: limit
+			} }
+		}
+
+		var query = searchDbQuery(this, searchQuery || "", searchZites[ziteAddress].searchOptions);
+
+		this.cmd("as", [ziteAddress, "dbQuery", [query]], (results) => {
+			if (typeof f !== undefined && f != null) f(results, searchZites[ziteAddress].name);
+		});
 	}
 
 	selectUser() {
@@ -288,19 +488,23 @@ page = new ZeroApp();
 
 var Home = require("./router_pages/home.vue");
 var CreateId = require("./router_pages/create_id.vue");
+var CreateBotId = require("./router_pages/create_bot_id.vue");
 var Profile = require("./router_pages/profile.vue");
 var Plugins = require("./router_pages/plugins.vue");
 var UploadPlugin = require("./router_pages/upload_plugin.vue");
+var UploadPluginVersion = require("./router_pages/upload_plugin_version.vue");
 var Plugin = require("./router_pages/plugin.vue");
 var Settings = require("./router_pages/settings.vue");
 
 VueZeroFrameRouter.VueZeroFrameRouter_Init(Router, app, [
+	{ route: "plugin/:username/:id/add", component: UploadPluginVersion },
 	{ route: "plugin/:username/:id", component: Plugin },
 	{ route: "plugins/upload", component: UploadPlugin },
 	{ route: "plugins", component: Plugins },
 	{ route: "profile/:username", component: Profile },
 	{ route: "profile", component: Profile },
 	{ route: "create-id", component: CreateId },
+	{ route: "create-bot-id", component: CreateBotId },
 	{ route: "search/:tab/:searchQuery", component: Home },
 	{ route: "search/:tab", component: Home },
 	{ route: "search", component: Home },

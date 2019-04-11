@@ -30,7 +30,7 @@
 
 					<strong>Initial Version</strong><br><br>
 
-					<input class="file-input" type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" id="fileUpload" v-on:change="uploadFile()"><br>
+					<input class="file-input" type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" id="fileUpload"><br>
 					<v-text-field name="version"
 						label="Version String"
 						value=""
@@ -40,7 +40,7 @@
 					></v-text-field>
 					<v-checkbox name="prerelease" label="Pre-release?" v-model="prerelease"></v-checkbox>
 					
-					<v-btn color="success" :loading="loading" @click="upload()">Upload</v-btn>
+					<v-btn color="success" :loading="loading" @click="uploadFile()">Upload</v-btn>
 				</v-card-text>
 			</v-card>
 			<!--<svg width="80" height="80" style="float: left; margin-bottom: 15px;" v-bind:data-jdenticon-value="userInfo.auth_address"></svg>
@@ -206,18 +206,18 @@
 						continue;
 					}
 
-					let reader = new FileReader();
+					/*let reader = new FileReader();
 					reader.onload = function(event) {
 							let f_data = btoa(event.target.result);
 							let file_type = fY.type;
-
+					*/
 							page.uploadBigFile(fY, (output_url) => {
 									console.log("Uploaded big file!");
 									fileUpload.value = null;
 									self.addToDb(output_url);
 								});
-						};
-					reader.readAsBinaryString(fY);
+					//	};
+					//reader.readAsBinaryString(fY);
 				}
 			},
 			addToDb: function(output_url) {

@@ -8,14 +8,14 @@
 						<v-card v-for="plugin in plugins.slice(0, Math.round(plugins.length / 2))" :key="plugin.id" style="padding: 10px; margin-top: 8px;">
 							<strong style="color: blue; cursor: pointer;" @click="goto('plugin/' + plugin.cert_user_id.replace(/@kxoid.bit/, '') + '/' + plugin.id)">{{ plugin.name }}</strong>
 							<div>{{ plugin.description }}</div>
-							<div><a @click="downloadPlugin(plugin)">Download Latest</a></div>
+							<!--<div><a @click="downloadPlugin(plugin)">Download Latest</a></div>-->
 						</v-card>
 					</v-flex>
 					<v-flex xs12 sm6>
 						<v-card v-for="plugin in plugins.slice(Math.round(plugins.length / 2))" :key="plugin.id" style="padding: 10px; margin-top: 8px;">
 							<strong style="color: blue; cursor: pointer;" @click="goto('plugin/' + plugin.cert_user_id.replace(/@kxoid.bit/, '') + '/' + plugin.id)">{{ plugin.name }}</strong>
 							<div>{{ plugin.description }}</div>
-							<div><a @click="downloadPlugin(plugin)">Download Latest</a></div>
+							<!--<div><a @click="downloadPlugin(plugin)">Download Latest</a></div>-->
 						</v-card>
 					</v-flex>
 				</v-layout>
@@ -68,45 +68,8 @@
 			this.getPlugins();
 
 			this.$emit("setcallback", "update", function() {
-                /*self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
-					self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
-						self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
-							self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
-								self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", false, () => {
-									self.getCorsAndDb("1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT", true);
-								});
-							});
-						});
-					});
-				});*/
+				self.getPlugins();
 			});
-
-			/*this.$parent.$on("update", function() {
-                //self.getQuestions();
-                self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
-					self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
-						self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
-							self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
-								self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", false, () => {
-									self.getCorsAndDb("1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT", true);
-								});
-							});
-						});
-					});
-				});
-			});*/
-
-			/*self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
-				self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
-					self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
-						self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
-							self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", false, () => {
-								self.getCorsAndDb("1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT", true);
-							});
-						});
-					});
-				});
-			});*/
 		},
 		computed: {
 			isLoggedIn: function() {

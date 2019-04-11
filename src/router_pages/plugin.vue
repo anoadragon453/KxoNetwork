@@ -3,34 +3,22 @@
 		<v-container style="max-width: 700px;" v-if="plugin">
 			<div style="display: block; margin-bottom: 10px;"><strong style="font-size: 1.2em;">Plugin: {{ plugin.name }}</strong><a v-if="userInfo && userInfo.cert_user_id == plugin.cert_user_id" style="float: right;" @click.prevent="">Edit Plugin</a></div>
 			<p>{{ plugin.description }}</p>
-			<div><a @click="downloadLatestVersion()">Download Latest</a> <span v-if="default_version_peers">({{ default_version_peers }} peers)</span></div>
+			<p>Uploaded by <a :href="'./?/profile/' + plugin.cert_user_id.replace('@kxoid.bit', '')" @click.prevent="goto('profile/' + plugin.cert_user_id.replace('@kxoid.bit', ''))">{{ plugin.cert_user_id }}</a></p>
+			<div>
+				<a @click="downloadLatestVersion()">Download Latest</a> <span v-if="latest_version_peers">({{ latest_version_peers }} peers)</span>
+				| <a @click="follow()">{{ followText }}</a>
+			</div>
+			<div v-if="isOwner">
+				<a @click.prevent="uploadNewVersion()">Upload New Version</a>
+			</div>
 			<hr>
 			<v-card v-for="version in plugin_versions" :key="version.id" style="padding: 10px; margin-top: 10px;">
 				<div>Version {{ version.version }}</div>
-				<div><a @click="downloadVersion(version)">Download</a> <span v-if="version.peer">({{ version.peer }} peers)</span></div>
+				<div><a @click="downloadVersion(version)">Download</a> <span v-if="typeof version.peer !== undefined && version.peer != null">({{ version.peer }} peers)</span></div>
 			</v-card>
-			<!--<svg width="80" height="80" style="float: left; margin-bottom: 15px;" v-bind:data-jdenticon-value="userInfo.auth_address"></svg>
-			<div style="float: right; width: calc(100% - 90px); height: 80px; margin-bottom: 15px;">
-				<strong style="font-size: 1.2em;">{{ userInfo.cert_user_id.replace(/@kxoid.bit/, '') }}</strong>
-				<p>{{ userInfo.auth_address }}</p>
-			</div>
-			<div style="clear: both;"></div>
-			<hr>
-			<div style="display: block; margin-bottom: 10px;"><strong style="font-size: 1.2em;">Zite Search Settings</strong></div>
-			<div style="width: 50%; float: left;">
-				<v-card v-for="zite in corsZites.slice(0, Math.round(corsZites.length / 2))" :key="zite.address" style="cursor: pointer;">
-					<v-card-title primary-title>
-						<strong style="color: blue;">{{ zite.searchType }}: {{ zite.title }}</strong>
-					</v-card-title>
-				</v-card>
-			</div>
-			<div style="width: 50%; float: right">
-				<v-card v-for="zite in corsZites.slice(Math.round(corsZites.length / 2))" :key="zite.address" style="cursor: pointer;">
-					<v-card-title primary-title>
-						<strong style="color: blue;">{{ zite.searchType }}: {{ zite.title }}</strong>
-					</v-card-title>
-				</v-card>
-			</div>-->
+		</v-container>
+		<v-container style="max-width: 700px;" v-else>
+			<p>Plugin does not exist!</p>
 		</v-container>
 	</v-container>
 </template>
@@ -46,7 +34,8 @@
 			return {
 				plugin: null,
 				plugin_versions: [],
-				default_version_peers: 0
+				latest_version_peers: 0,
+				followText: "Follow New Versions"
 			};
 		},
 		beforeMount: function() {
@@ -65,52 +54,20 @@
 			}
 
 			this.getPlugin(Router.currentParams["username"], Router.currentParams["id"]);
+			this.isFollowing();
 
 			this.$emit("setcallback", "update", function() {
-                /*self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
-					self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
-						self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
-							self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
-								self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", false, () => {
-									self.getCorsAndDb("1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT", true);
-								});
-							});
-						});
-					});
-				});*/
+				self.getPlugin(Router.currentParams["username"], Router.currentParams["id"]);
 			});
-
-			/*this.$parent.$on("update", function() {
-                //self.getQuestions();
-                self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
-					self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
-						self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
-							self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
-								self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", false, () => {
-									self.getCorsAndDb("1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT", true);
-								});
-							});
-						});
-					});
-				});
-			});*/
-
-			/*self.getCorsAndDb("1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E", false, () => {
-				self.getCorsAndDb("1SiTEs2D3rCBxeMoLHXei2UYqFcxctdwB", false, () => {
-					self.getCorsAndDb("186THqMWuptrZxq1rxzpguAivK3Bs6z84o", false, () => {
-						self.getCorsAndDb("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t", false, () => {
-							self.getCorsAndDb("1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W", false, () => {
-								self.getCorsAndDb("1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT", true);
-							});
-						});
-					});
-				});
-			});*/
 		},
 		computed: {
 			isLoggedIn: function() {
 				if (this.userInfo == null) return false;
 				return this.userInfo.cert_user_id != null;
+			},
+			isOwner: function() {
+				if (!this.userInfo) return false;
+				return this.plugin.cert_user_id == this.userInfo.cert_user_id;
 			}
 		},
 		methods: {
@@ -138,31 +95,79 @@
 				page.cmd("dbQuery", [query], function(results) {
 					//console.log(results);
 					self.plugin = results[0];
-					self.getDefaultVersionPeers();
 					self.getVersions(results[0].id, results[0].cert_user_id);
 				});
 			},
 			getVersions: function(plugin_id, plugin_cert_user_id) {
 				var self = this;
 
-				var query = `SELECT * FROM plugin_versions LEFT JOIN json USING (json_id) WHERE plugin_id=${plugin_id} AND cert_user_id='${plugin_cert_user_id}' ORDER BY date_added DESC`;
+				var query = `SELECT * FROM plugin_versions LEFT JOIN json USING (json_id) WHERE plugin_id=${plugin_id} AND json.cert_user_id='${plugin_cert_user_id}' ORDER BY date_added DESC`;
 
 				page.cmd("dbQuery", [query], function(results) {
 					console.log(results);
 					self.plugin_versions = results;
 					self.plugin_versions.forEach(function(version, index) {
+						console.log(version.file_download_url);
 						page.cmd("optionalFileInfo", [version.file_download_url], function(info) {
 							self.plugin_versions[index]["peer"] = info.peer;
+							console.log("Info: ", info);
+
 						});
+						if (index == self.plugin_versions.length - 1) self.getLatestVersionPeers();
 					});
 				});
 			},
-			getDefaultVersionPeers: function() {
+			getLatestVersionPeers: function() {
 				var self = this;
 
-				page.cmd("optionalFileInfo", [self.plugin.file_download_url], function(info) {
-					self.default_version_peers = info.peer;
+				page.cmd("optionalFileInfo", [self.plugin_versions[0].file_download_url], function(info) {
+					self.latest_version_peers = info.peer;
 				});
+			},
+			isFollowing: function() {
+				var self = this;
+				page.cmd("feedListFollow", [], (followList) => {
+					if (followList["plugin_" + Router.currentParams["username"] + "_" + self.plugin.id]) {
+						self.followText = "Unfollow New Versions";
+					} else {
+						self.followText = "Follow New Versions";
+					}
+				});
+			},
+			follow: function() {
+				var self = this;
+				page.cmd("feedListFollow", [], (followList) => {
+					var query = `
+						SELECT 'plugin_' || REPLACE(json.cert_user_id, '@kxoid.bit', '') || '_' || plugin_versions.id AS event_uri,
+							'article' AS type,
+							plugin_versions.date_added AS date_added,
+							'New Version Of Plugin "' || plugins.name || '"' AS title,
+							plugin_versions.version || ': ' || plugins.description AS body,
+							'?/plugin/' || REPLACE(json.cert_user_id, '@kxoid.bit', '') || '/' || plugin_versions.plugin_id AS url
+						FROM plugin_versions
+						LEFT JOIN json USING (json_id)
+						LEFT JOIN plugins ON plugins.id=plugin_versions.plugin_id AND plugins.json_id=plugin_versions.json_id
+						WHERE plugin_versions.plugin_id=${self.plugin.id}
+							AND json.cert_user_id='${Router.currentParams["username"]}@kxoid.bit'
+						`;
+					var params = "";
+					console.log(query);
+					page.cmdp("dbQuery", [query])
+						.then((results) => console.log(results));
+					
+					var newList = followList;
+					if (followList["plugin_" + Router.currentParams["username"] + "_" + self.plugin.id]) {
+						delete newList["plugin_" + Router.currentParams["username"] + "_" + self.plugin.id];
+						self.followText = "Follow New Versions";
+					} else {
+						newList["plugin_" + Router.currentParams["username"] + "_" + self.plugin.id] = [query, params];
+						self.followText = "Unfollow New Versions";
+					}
+					page.cmd("feedFollow", [newList]);
+				});
+			},
+			uploadNewVersion: function() {
+				Router.navigate('plugin/' + Router.currentParams["username"] + '/' + Router.currentParams["id"] + '/add');
 			},
 			goto: function(to) {
 				Router.navigate(to);
@@ -179,7 +184,7 @@
 				/*console.log(this.plugin);
 				console.log(this.plugin.file_download_url);
 				console.log(this.plugin.version);*/
-				window.location = '/1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P/' + this.plugin.file_download_url;
+				window.location = '/1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P/' + this.plugin_versions[0].file_download_url;
 			},
 			downloadVersion: function(version) {
 				window.location = '/1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P/' + version.file_download_url;
