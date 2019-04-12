@@ -60,7 +60,7 @@ var app = new Vue({
 	},
 	methods: {
 		getUserInfo: function(f = null) {
-			var query = `SELECT *, 'ids' AS table FROM ids WHERE address="${this.siteInfo.auth_address}" UNION SELECT *, 'bots' AS table FROM bots WHERE address="${this.siteInfo.auth_address}"`
+			var query = `SELECT ids.*, 'ids' AS table FROM ids WHERE address="${this.siteInfo.auth_address}" UNION SELECT bots.*, 'bots' AS table FROM bots WHERE address="${this.siteInfo.auth_address}"`
 			page.cmd("dbQuery", [query], (results) => {
 				if (results.length > 0) {
 					var type = results[0].table == "ids" ? "web" : "bot";

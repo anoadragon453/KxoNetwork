@@ -1,6 +1,6 @@
 <template>
 	<v-container fluid>
-		<v-container style="max-width: 700px;" v-if="userInfo && plugin && isOwner">
+		<v-container style="max-width: 700px;" v-if="userInfo && plugin && isOwner && !loading">
 			<div style="display: block; margin-bottom: 10px;"><strong style="font-size: 1.2em;">Upload New Version of '{{ plugin.name }}' Plugin</strong></div>
 			<v-card>
 				<v-card-text>
@@ -20,13 +20,13 @@
 				</v-card-text>
 			</v-card>
 		</v-container>
-		<v-container style="max-width: 700px;" v-if="!userInfo">
+		<v-container style="max-width: 700px;" v-if="!userInfo && !loading">
 			<p>You must be logged in to upload plugin to plugin store!</p>
 		</v-container>
-		<v-container style="max-width: 700px;" v-if="!plugin">
+		<v-container style="max-width: 700px;" v-if="!plugin && !loading">
 			<p>Plugin does not exist!</p>
 		</v-container>
-		<v-container style="max-width: 700px;" v-if="!isOwner">
+		<v-container style="max-width: 700px;" v-if="!isOwner && !loading">
 			<p>You must be the owner of the plugin to upload a new version of it!</p>
 		</v-container>
 	</v-container>
@@ -46,7 +46,7 @@
 				gitcenteraddress: "",
 				version: "",
 				prerelease: false,
-				loading: false
+				loading: true
 			};
 		},
 		beforeMount: function() {
@@ -64,6 +64,7 @@
 				});*/
 			}
 
+			this.loading = true;
 			this.getPlugin(Router.currentParams["username"], Router.currentParams["id"]);
 
 			this.$emit("setcallback", "update", function() {
@@ -75,7 +76,7 @@
 				return this.userInfo.cert_user_id != null;
 			},
 			isOwner: function() {
-				if (!this.userInfo) return false;
+				if (!this.userInfo || !this.plugin) return false;
 				return this.plugin.cert_user_id == this.userInfo.cert_user_id;
 			}
 		},
@@ -102,6 +103,7 @@
 				var query = `SELECT plugins.*, json.cert_user_id, plugin_versions.file_download_url, plugin_versions.version FROM plugins LEFT JOIN json USING (json_id) LEFT JOIN plugin_versions ON plugins.default_version_id = plugin_versions.id WHERE plugins.id=${id} AND cert_user_id='${username}@kxoid.bit' limit 1`;
 
 				page.cmd("dbQuery", [query], function(results) {
+					this.loading = false;
 					//console.log(results);
 					self.plugin = results[0];
 				});

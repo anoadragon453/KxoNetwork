@@ -24,8 +24,8 @@
 		    	<v-list-tile @click="gotoLink('/ZeroMedium.bit')">
 		    		<v-list-tile-title>ZeroMedium</v-list-tile-title>
 		    	</v-list-tile>
-		    	<v-list-tile @click="gotoLink('/ZeroExchange.bit')">
-		    		<v-list-tile-title>ZeroExchange</v-list-tile-title>
+		    	<v-list-tile @click="gotoLink('/1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W')">
+		    		<v-list-tile-title>KxoQA</v-list-tile-title>
 		    	</v-list-tile>
 		    	<v-list-tile @click="gotoLink('/1LqcxtENM69yBggxPYLaj87J4bqon5SVwU')">
 		    		<v-list-tile-title>KxoHub (ZeroMe Hub)</v-list-tile-title>

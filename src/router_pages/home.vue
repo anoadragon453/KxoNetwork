@@ -178,7 +178,7 @@
 				currentResults: 0,
 				featured: [
 					{ title: "0Play Game Center", address: "1Ag6xidDHiPgWoDKhfSx4xFQr6WC3NqxZg" },
-					{ title: "ZeroExchange", address: "ZeroExchange.bit" },
+					{ title: "KxoQA", address: "1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W" },
 					{ title: "Git Center", address: "1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t" },
 					{ title: "Horizon", address: "1HoRiznsHbJAqs2bmrVcSd79NTGVFp4Ju2" },
 					{ title: "ZPlace", address: "1D6f2CvDRhPeEeBAcmqGt3X9z2CkLpmv2V" },
