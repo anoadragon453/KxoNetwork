@@ -549,7 +549,10 @@ var UploadPluginVersion = require("./router_pages/upload_plugin_version.vue");
 var Plugin = require("./router_pages/plugin.vue");
 var Settings = require("./router_pages/settings.vue");
 
+var KxoId = require("./router_pages/kxoid.vue");
+
 VueZeroFrameRouter.VueZeroFrameRouter_Init(Router, app, [
+	{ route: "kxoid", component: KxoId },
 	{ route: "plugin/:username/:id/add", component: UploadPluginVersion },
 	{ route: "plugin/:username/:id", component: Plugin },
 	{ route: "plugins/upload", component: UploadPlugin },

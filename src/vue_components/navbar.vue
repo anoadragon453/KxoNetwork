@@ -3,6 +3,7 @@
 		<v-toolbar-title style="cursor: pointer;" @click.prevent="goto('')">{{ ZiteName }} (beta)</v-toolbar-title>
 		<v-toolbar-items style="margin-left: 10px;">
 			<!--<v-btn flat>News</v-btn>-->
+			<v-btn flat @click="goto('kxoid')">KxoId</v-btn>
 			<v-btn flat @click="goto('plugins')">Plugin Store</v-btn>
 		</v-toolbar-items>
 		<v-spacer></v-spacer>
