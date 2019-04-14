@@ -7,7 +7,7 @@ var defaultLang = require("./default-lang.js");
 
 waitingForResponse = false;
 
-bitcoin = require("./libs/bitcoinjs.min.js");
+//bitcoin = require("./libs/bitcoinjs.min.js");
 
 permissionaddress = "12F5SvxoPR128aiudte78h8pY7mobroG6V"; // aka public address of kxoid.
 base64_publickey = "BOVHKzLh7FHFKCx0DjPj7BCFkuVH0Qcf95uh4Ns69LCRGiUkF+4tbe+IhbilIO8AfRDztBZ4y7ELtfOYPLrx2TA=";
@@ -73,15 +73,34 @@ var app = new Vue({
 	},
 	methods: {
 		getUserInfo: function(f = null) {
-			// TODO: Fix this - syntax error near "table"
-			var query = `SELECT ids.*, 'ids' AS table FROM ids WHERE address="${this.siteInfo.auth_address}" UNION SELECT bots.*, 'bots' AS table FROM bots WHERE address="${this.siteInfo.auth_address}"`
+			var query = `
+				SELECT * FROM (
+					SELECT *, 'ids' AS t FROM ids
+					UNION
+					SELECT *, 'bots' AS t FROM bots
+				)
+
+				INNER JOIN json USING (json_id)
+
+				WHERE (
+					address="${this.siteInfo.auth_address}"
+				) AND (
+					file_name = "ids.json" OR
+					(
+						cert_auth_type IS NOT NULL AND
+						cert_user_id IS NOT NULL AND
+						trustedpeer_sig IS NOT NULL
+					)
+				)`;
+
+			//var query = `SELECT ids.*, 'ids' AS table FROM ids WHERE address="${this.siteInfo.auth_address}" UNION SELECT bots.*, 'bots' AS table FROM bots WHERE address="${this.siteInfo.auth_address}"`
 			page.cmd("dbQuery", [query], (results) => {
 				console.log("Before: ", results);
 				if (results && typeof results === "Array") {
 					results = results.filter((row) => {
-						if (row.file_name == "ids.json") return true;
+						//if (row.file_name == "ids.json") return true;
 						var cert = row.directory.replace('users/', '') + '#' + row.cert_auth_type + '/' + row.cert_user_id;
-						console.log(cert);
+						//console.log(cert);
 						return bitcoin.message.verify(cert, permissionaddress_level2, row.trustedpeer_sig);
 					});
 				}
@@ -89,7 +108,7 @@ var app = new Vue({
 				console.log("After: ", results);
 
 				if (results.length > 0) {
-					var type = results[0].table == "ids" ? "web" : "bot";
+					var type = results[0].t == "ids" ? "web" : "bot";
 					page.cmdp("certAdd", [certname, type, results[0].username, results[0].signature])
 						.then((res) => {
 						});
@@ -211,7 +230,7 @@ class ZeroApp extends ZeroFrame {
 				if (message.params.message.startsWith("success") || message.params.message.startsWith("error")) {
 					console.log(message.params);
 					// Invalidate peers that are trying to send a response without being a trusted peer
-					if (message.params.signed_by != "1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P" && message.params.signed_by != permissionaddress_level2) {
+					if (message.params.signed_by != "1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P" && message.params.signed_by != "12F5SvxoPR128aiudte78h8pY7mobroG6V" && message.params.signed_by != permissionaddress_level2) {
 						this.cmd("peerInvalid", [message.params.hash]);
 						return;
 					}

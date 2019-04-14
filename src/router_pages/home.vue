@@ -83,7 +83,7 @@
 							<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
 							<div style="float: right; width: calc(100% - 50px);">
 								<div><strong style="color: blue;">{{ result.username }}</strong></div>
-								<div><small>{{ result.address }}</small></div>
+								<div><small>{{ result.type == "bot" ? "Bot: " : "" }}{{ result.address }}</small></div>
 							</div>
 							<div style="clear: both;"></div>
 						</v-card>
@@ -93,7 +93,7 @@
 							<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
 							<div style="float: right; width: calc(100% - 50px);">
 								<div><strong style="color: blue;">{{ result.username }}</strong></div>
-								<div><small>{{ result.address }}</small></div>
+								<div><small>{{ result.type == "bot" ? "Bot: " : "" }}{{ result.address }}</small></div>
 							</div>
 							<div style="clear: both;"></div>
 						</v-card>
@@ -517,7 +517,7 @@
 					select: "*",
 					searchSelects: searchSelects_KxoZites,
 					table: "zites",
-					join: "LEFT JOIN json USING (json_id)",
+					join: "INNER JOIN json USING (json_id)",
 					//where: languageWhere,
 					page: pageNum,
 					afterOrderBy: "date_added ASC",
@@ -545,7 +545,7 @@
 						select: "*",
 						searchSelects: searchSelects_ZeroSites,
 						table: "site",
-						join: "LEFT JOIN json USING (json_id)",
+						join: "INNER JOIN json USING (json_id)",
 						//where: languageWhere,
 						page: pageNum,
 						afterOrderBy: "date_added DESC",
@@ -593,8 +593,8 @@
 							CASE WHEN MAX(comment.added) IS NULL THEN topic.added ELSE MAX(comment.added) END as last_action`,
 						searchSelects: searchSelects_ZeroTalk,
 						table: "topic",
-						join: `LEFT JOIN json USING (json_id)
-							LEFT JOIN json AS topic_creator_content ON (topic_creator_content.directory = json.directory AND topic_creator_content.file_name = 'content.json')
+						join: `INNER JOIN json USING (json_id)
+							INNER JOIN json AS topic_creator_content ON (topic_creator_content.directory = json.directory AND topic_creator_content.file_name = 'content.json')
 							LEFT JOIN keyvalue AS topic_creator_user ON (topic_creator_user.json_id = topic_creator_content.json_id AND topic_creator_user.key = 'cert_user_id')
 							LEFT JOIN comment ON (comment.topic_uri = row_topic_uri AND comment.added < ${Date.now()/1000+120})`,
 						page: self.pageNum,
@@ -631,7 +631,7 @@
 						select: "*",
 						searchSelects: searchSelects_ZeroExchange,
 						table: "questions",
-						join: "LEFT JOIN json USING (json_id)",
+						join: "INNER JOIN json USING (json_id)",
 						//where: languageWhere,
 						page: 0,
 						afterOrderBy: "date_added DESC",
@@ -648,7 +648,7 @@
 						select: "*",
 						searchSelects: searchSelects_GitCenter,
 						table: "repo_index",
-						join: "LEFT JOIN json USING (json_id)",
+						join: "INNER JOIN json USING (json_id)",
 						//where: languageWhere,
 						page: 0,
 						afterOrderBy: "date_added ASC",
@@ -674,7 +674,7 @@
 					table: "ids",
 					page: pageNum,
 					//afterOrderBy: "date_added ASC",
-					join: "LEFT JOIN json USING (json_id)",
+					join: "INNER JOIN json USING (json_id)",
 					limit: this.limit
 				});
 
@@ -685,47 +685,35 @@
 					searchSelects: searchSelects_KxoIds,
 					table: "bots",
 					page: pageNum,
-					join: "LEFT JOIN json USING (json_id)",
+					join: "INNER JOIN json USING (json_id)",
 					limit: this.limit
 				});
 
 				this.doSearchQuery("KxoId", "self", searchSelects_KxoIds, query, setNextResults, subPageNum, async function(results) {
-					console.log("Before: ", results);
 					results = await asyncFilter(results, async (row) => {
 						if (row.file_name == "ids.json") return true;
 						var cert = row.directory.replace('users/', '') + '#' + row.cert_auth_type + '/' + row.cert_user_id;
-						console.log(cert);
-						console.log("trustedpeerSig: ", "'" + row.trustedpeer_sig + "'");
+
 						return await page.cmdp("ecdsaVerify", [cert, permissionaddress_level2, row.trustedpeer_sig]);
 					});
-					/*results = results.filter((row) => {
-						if (row.file_name == "ids.json") return true;
-						var cert = row.directory.replace('users/', '') + '#' + row.cert_auth_type + '/' + row.cert_user_id;
-						console.log(cert);
-						console.log("trustedpeerSig: ", "'" + row.trustedpeer_sig + "'");
-						return bitcoin.message.verify(cert, permissionaddress_level2, row.trustedpeer_sig);
-					});*/
+
+					for (var i = 0; i < results.length; i++) {
+						results[i]["type"] = "web";
+					}
 
 					return results;
 				});
 				this.doSearchQuery("KxoId Bots", "self", searchSelects_KxoIds, query2, setNextResults, subPageNum, async function(results) {
-					console.log("Before: ", results);
 					results = await asyncFilter(results, async (row) => {
 						if (row.file_name == "ids.json") return true;
 						var cert = row.directory.replace('users/', '') + '#' + row.cert_auth_type + '/' + row.cert_user_id;
-						console.log(cert);
-						console.log("trustedpeerSig: ", "'" + row.trustedpeer_sig + "'");
+
 						return await page.cmdp("ecdsaVerify", [cert, permissionaddress_level2, row.trustedpeer_sig]);
 					});
-					/*results = results.filter((row) => {
-						if (row.file_name == "ids.json") return true;
-						var cert = row.directory.replace('users/', '') + '#' + row.cert_auth_type + '/' + row.cert_user_id
-						console.log(cert);
-						console.log("trustedpeerSig: ", row.trustedpeer_sig);
-						return bitcoin.message.verify(cert, permissionaddress_level2, row.trustedpeer_sig);
-					});*/
 
-					console.log("After: ", results);
+					for (var i = 0; i < results.length; i++) {
+						results[i]["type"] = "bot";
+					}
 
 					return results;
 				});
@@ -745,8 +733,8 @@
 						select: "videos.*, videos_json.directory, videos_json.site, videos_json.cert_user_id, channels.name as channel_name",
 						searchSelects: searchSelects,
 						table: "videos",
-						join: `LEFT JOIN json as videos_json USING (json_id)
-								LEFT JOIN json as channels_json ON channels_json.directory=videos_json.directory AND channels_json.site="1HmJfQqTsfpdRinx3m8Kf1ZdoTzKcHfy2F"
+						join: `INNER JOIN json as videos_json USING (json_id)
+								INNER JOIN json as channels_json ON channels_json.directory=videos_json.directory AND channels_json.site="1HmJfQqTsfpdRinx3m8Kf1ZdoTzKcHfy2F"
 								LEFT JOIN channels ON channels.channel_id=videos.ref_channel_id AND channels.json_id=channels_json.json_id`,
 						afterOrderBy: "date_added ASC",
 						page: pageNum,
@@ -770,7 +758,7 @@
 						select: "*",
 						searchSelects: searchSelects,
 						table: "file",
-						join: `LEFT JOIN json using (json_id)`,
+						join: `INNER JOIN json using (json_id)`,
 						afterOrderBy: "date_added ASC",
 						page: pageNum,
 						limit: this.limit
@@ -795,7 +783,7 @@
 						select: "*",
 						searchSelects: searchSelects,
 						table: "file",
-						join: "LEFT JOIN json USING (json_id)",
+						join: "INNER JOIN json USING (json_id)",
 						page: pageNum,
 						afterOrderBy: "date_added DESC",
 						limit: this.limit
