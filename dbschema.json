@@ -7,10 +7,10 @@
             "to_table": ["ids", "bots"]
         },
         "users/.+/data.json": {
-            "to_table": ["plugins", "plugin_versions"]
+            "to_table": ["plugins", "plugin_versions", "ids", "bots"]
         },
         "users/.+/content.json": {
-            "to_json_table": ["cert_user_id"],
+            "to_json_table": ["cert_user_id", "cert_auth_type", "trustedpeer_sig"],
             "file_name": "data.json"
         }
     },
@@ -20,10 +20,12 @@
                 ["json_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
                 ["directory", "TEXT"],
                 ["file_name", "TEXT"],
-                ["cert_user_id", "TEXT"]
+                ["cert_user_id", "TEXT"],
+                ["cert_auth_type", "TEXT"],
+                ["trustedpeer_sig", "TEXT"]
             ],
             "indexes": ["CREATE UNIQUE INDEX path ON json(directory, file_name)"],
-            "schema_changed": 3
+            "schema_changed": 4
         },
         "ids": {
             "cols": [

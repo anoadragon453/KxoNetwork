@@ -11,6 +11,7 @@
 				<v-card-text>
 					<v-text-field id="username" name="username" ref="usernameinput" label="Username" clearable required suffix="@kxoid.bit" v-model="username" :rules="getRules()"></v-text-field>
 					<v-btn @click="register()" :loading="loading" :disabled="!hasPeerMessage">Create Id</v-btn>
+					<v-btn @click="register_level2()" :loading="loading" :disabled="!hasPeerMessage">Create Level2 Id</v-btn>
 
 					<v-divider style="margin-top: 15px;"></v-divider>
 					<v-subheader>What is KxoId?</v-subheader>
@@ -21,7 +22,7 @@
 					<v-subheader>Supporting KxoId on Your Zite</v-subheader>
 
 					<p>For developers, you can support KxoId by adding this to the "cert_signers" of your users content.json file:</p>
-					<p>"kxoid.bit": ["{{ permissionaddress }}"]</p>
+					<code>"kxoid.bit": ["{{ permissionaddress }}", "{{ permissionaddress_level2 }}"]</code>
 
 					<v-divider style="margin-top: 15px;"></v-divider>
 					<v-subheader>Register Bot Ids</v-subheader>
@@ -47,7 +48,9 @@
 				username: "",
 				error: "",
 				permissionaddress: permissionaddress,
-				loading: false
+				permissionaddress_level2: permissionaddress_level2,
+				loading: false,
+				level2: false // If false, registering for level1
 			};
 		},
 		beforeMount: function() {
@@ -72,6 +75,7 @@
 				return this.userInfo.cert_user_id != null;
 			},
 			hasPeerMessage: function() {
+				if (!this.serverInfo) return false;
 				console.log(this.serverInfo);
 				if (this.serverInfo.plugins.includes("Plugin-PeerMessage")
 					|| this.serverInfo.plugins.includes("Plugin-PeerMessage-master")
@@ -94,7 +98,7 @@
 					() => this.error == "" || this.error
 				];
 			},
-			peerReceive: function(messageParams) {
+			peerReceive: async function(messageParams) {
 				var self = this;
 				this.error = "";
 				console.log(messageParams);
@@ -221,6 +225,37 @@
 						waitingForResponse = true;
 						self.loading = true;
 						page.cmdp("peerBroadcast", {message: "register|" + encryptedMsg, immediate: true, privatekey: false});
+					}).catch((error) => console.log(error));
+			},
+			register_level2: function() {
+				if (!this.hasPeerMessage) {
+					page.cmdp("wrapperNotification", ["error", "You must have the PeerMessage plugin installed. Download and install from the Plugin Store."]);
+					return;
+				}
+				if (this.userInfo && this.userInfo.cert_user_id) {
+					alert("You already have a KxoId.");
+					return;
+				}
+
+				var username = this.username.toLowerCase();
+				if (username === "") {
+					//username = page.siteInfo.auth_address.slice(0, 13);
+					page.cmd("wrapperNotification", ["error", "Your username cannot be blank."]);
+				}
+				// TODO: Check that username doesn't have space.
+
+				// Encrypt with public key of kxoid so that only people who have the private key (the trusted servers) can decrypt and send back a signature, that way other's cant steal the username before it's been signed and added.
+				this.level2 = true;
+				var message = username;
+				// When received back signed, do .toString("base64") before adding cert.
+				console.log(message);
+				var self = this;
+				page.cmdp("eciesEncrypt", { "text": message, "publickey": base64_publickey_level2 })
+					.then((encryptedMsg) => {
+						console.log("Encrypted: " + encryptedMsg);
+						waitingForResponse = true;
+						self.loading = true;
+						page.cmdp("peerBroadcast", {message: "register2|" + encryptedMsg, immediate: true, privatekey: false});
 					}).catch((error) => console.log(error));
 			}
 		}

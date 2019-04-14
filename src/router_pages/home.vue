@@ -362,12 +362,14 @@
 					return;
 				}
 			},
-            doSearchQuery: function(ziteName, address, searchSelects, query, setNextResults, subPageNum) {
+            doSearchQuery: function(ziteName, address, searchSelects, query, setNextResults, subPageNum, f = null) {
             	var self = this;
 				var startTime = new Date();
 				var startTab = this.currentTab;
 
-            	var addResults = (results) => {
+            	var addResults = async (results) => {
+					if (f != null && typeof f === "function") results = await f(results);
+
 					//console.log(results);
             		self.currentResults++;
 					// Add stuff to each result, including zite name and scoreNum
@@ -491,9 +493,9 @@
             	};
 
             	if (address != "self") {
-					page.cmd("as", [address, "dbQuery", [query]], addResults);
+					page.cmdp("as", [address, "dbQuery", [query]]).then(addResults);
 				} else {
-					page.cmd("dbQuery", [query], addResults);
+					page.cmdp("dbQuery", [query], addResults).then(addResults);
 				}
 			},
 			getZiteResults: function(pageNum, subPageNum, setNextResults) {
@@ -667,26 +669,66 @@
 				var query = searchDbQuery(this, this.searchQuery || "", {
 					orderByScore: true,
 					id_col: "id",
-					select: "*",
+					select: "ids.*, json.*",
 					searchSelects: searchSelects_KxoIds,
 					table: "ids",
 					page: pageNum,
 					//afterOrderBy: "date_added ASC",
+					join: "LEFT JOIN json USING (json_id)",
 					limit: this.limit
 				});
 
 				var query2 = searchDbQuery(this, this.searchQuery || "", {
 					orderByScore: true,
 					id_col: "id",
-					select: "*",
+					select: "bots.*, json.*",
 					searchSelects: searchSelects_KxoIds,
 					table: "bots",
 					page: pageNum,
+					join: "LEFT JOIN json USING (json_id)",
 					limit: this.limit
 				});
 
-				this.doSearchQuery("KxoId", "self", searchSelects_KxoIds, query, setNextResults, subPageNum);
-				this.doSearchQuery("KxoId Bots", "self", searchSelects_KxoIds, query2, setNextResults, subPageNum);
+				this.doSearchQuery("KxoId", "self", searchSelects_KxoIds, query, setNextResults, subPageNum, async function(results) {
+					console.log("Before: ", results);
+					results = await asyncFilter(results, async (row) => {
+						if (row.file_name == "ids.json") return true;
+						var cert = row.directory.replace('users/', '') + '#' + row.cert_auth_type + '/' + row.cert_user_id;
+						console.log(cert);
+						console.log("trustedpeerSig: ", "'" + row.trustedpeer_sig + "'");
+						return await page.cmdp("ecdsaVerify", [cert, permissionaddress_level2, row.trustedpeer_sig]);
+					});
+					/*results = results.filter((row) => {
+						if (row.file_name == "ids.json") return true;
+						var cert = row.directory.replace('users/', '') + '#' + row.cert_auth_type + '/' + row.cert_user_id;
+						console.log(cert);
+						console.log("trustedpeerSig: ", "'" + row.trustedpeer_sig + "'");
+						return bitcoin.message.verify(cert, permissionaddress_level2, row.trustedpeer_sig);
+					});*/
+
+					return results;
+				});
+				this.doSearchQuery("KxoId Bots", "self", searchSelects_KxoIds, query2, setNextResults, subPageNum, async function(results) {
+					console.log("Before: ", results);
+					results = await asyncFilter(results, async (row) => {
+						if (row.file_name == "ids.json") return true;
+						var cert = row.directory.replace('users/', '') + '#' + row.cert_auth_type + '/' + row.cert_user_id;
+						console.log(cert);
+						console.log("trustedpeerSig: ", "'" + row.trustedpeer_sig + "'");
+						return await page.cmdp("ecdsaVerify", [cert, permissionaddress_level2, row.trustedpeer_sig]);
+					});
+					/*results = results.filter((row) => {
+						if (row.file_name == "ids.json") return true;
+						var cert = row.directory.replace('users/', '') + '#' + row.cert_auth_type + '/' + row.cert_user_id
+						console.log(cert);
+						console.log("trustedpeerSig: ", row.trustedpeer_sig);
+						return bitcoin.message.verify(cert, permissionaddress_level2, row.trustedpeer_sig);
+					});*/
+
+					console.log("After: ", results);
+
+					return results;
+				});
 			},
 			getVideoResults: function(pageNum, subPageNum, setNextResults) {
 				// KxoVid

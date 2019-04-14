@@ -6,8 +6,15 @@ version = "0.1";
 var defaultLang = require("./default-lang.js");
 
 waitingForResponse = false;
+
+bitcoin = require("./libs/bitcoinjs.min.js");
+
 permissionaddress = "12F5SvxoPR128aiudte78h8pY7mobroG6V"; // aka public address of kxoid.
 base64_publickey = "BOVHKzLh7FHFKCx0DjPj7BCFkuVH0Qcf95uh4Ns69LCRGiUkF+4tbe+IhbilIO8AfRDztBZ4y7ELtfOYPLrx2TA=";
+
+permissionaddress_level2 = "18Mt3CWBpiqJBLsPSu5JxB4B9MeaSwhyJ"
+base64_publickey_level2 = "BFbaI8rV311Gh0XD+Z6PqvMaW1p/t6IIEorQJBWmrbYOvf1PwQBbfHFk96OnRuDdu0OiTUWqtGQITIAdtrgolto=";
+
 certname = "kxoid.bit";
 
 /*var MarkdownIt = require("markdown-it");
@@ -15,6 +22,7 @@ md = new MarkdownIt({
 	html: false,
 	linkify: true
 });*/
+
 
 jdenticon = require("jdenticon");
 jdenticon.config = {
@@ -38,6 +46,11 @@ Vue.use(Vuetify);
 // Vue Components
 var Navbar = require("./vue_components/navbar.vue");
 
+asyncFilter = async (arr, callback) => {
+	const fail = Symbol()
+	return (await Promise.all(arr.map(async item => (await callback(item)) ? item : fail))).filter(i=>i!==fail)
+};
+
 var app = new Vue({
 	el: "#app",
 	template: `<div><v-app>
@@ -60,8 +73,21 @@ var app = new Vue({
 	},
 	methods: {
 		getUserInfo: function(f = null) {
+			// TODO: Fix this - syntax error near "table"
 			var query = `SELECT ids.*, 'ids' AS table FROM ids WHERE address="${this.siteInfo.auth_address}" UNION SELECT bots.*, 'bots' AS table FROM bots WHERE address="${this.siteInfo.auth_address}"`
 			page.cmd("dbQuery", [query], (results) => {
+				console.log("Before: ", results);
+				if (results && typeof results === "Array") {
+					results = results.filter((row) => {
+						if (row.file_name == "ids.json") return true;
+						var cert = row.directory.replace('users/', '') + '#' + row.cert_auth_type + '/' + row.cert_user_id;
+						console.log(cert);
+						return bitcoin.message.verify(cert, permissionaddress_level2, row.trustedpeer_sig);
+					});
+				}
+
+				console.log("After: ", results);
+
 				if (results.length > 0) {
 					var type = results[0].table == "ids" ? "web" : "bot";
 					page.cmdp("certAdd", [certname, type, results[0].username, results[0].signature])
@@ -182,6 +208,14 @@ class ZeroApp extends ZeroFrame {
 			app.getUserInfo();
 		} else if (cmd === "peerReceive") {
 			if (waitingForResponse) {
+				if (message.params.message.startsWith("success") || message.params.message.startsWith("error")) {
+					console.log(message.params);
+					// Invalidate peers that are trying to send a response without being a trusted peer
+					if (message.params.signed_by != "1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P" && message.params.signed_by != permissionaddress_level2) {
+						this.cmd("peerInvalid", [message.params.hash]);
+						return;
+					}
+				}
 				// PeerValid is called in this callback only if
 				// this message wasn't directed to this client
 				app.callCallback("peerReceive", message.params);
@@ -398,7 +432,7 @@ class ZeroApp extends ZeroFrame {
     }
 
     signout() {
-    	return this.cmdp("certSelect", { accepted_domains: [""] });
+    	return this.cmdp("certSelect", { accepted_domains: ["kxoid.bit"] });
     }
 
     unimplemented() {
