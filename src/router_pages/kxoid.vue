@@ -55,8 +55,8 @@
                     { title: "KxoVid", address: "14c5LUN73J7KKMznp9LvZWkxpZFWgE1sDz" },
                     { title: "KxoQA", address: "1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W" },
                     { title: "ZeroMedium", address: "1CVmbCKWtbskK2GAZLM6gnMuiL6Je25Yds" },
-                    { title: "0Play Game Center", address: "" },
-                    { title: "ThunderWave", address: "" }
+                    { title: "0Play Game Center", address: "1Ag6xidDHiPgWoDKhfSx4xFQr6WC3NqxZg" },
+                    { title: "ThunderWave", address: "1CWkZv7fQAKxTVjZVrLZ8VHcrN6YGGcdky" }
                 ]
 			};
 		},
