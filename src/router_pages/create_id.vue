@@ -1,6 +1,14 @@
 <template>
 	<v-container fluid>
-		<v-container v-if="!isLoggedIn" style="padding-top: 7px; padding-bottom: 7px; max-width: 500px;"> <!-- Not Logged In -->
+		<v-container style="padding-top: 7px; padding-bottom: 7px; max-width: 500px;">
+			<div style="text-align: center;">
+                <strong style="font-size: 1.5em;">Down For the Next 24 Hours</strong>
+				<p>
+					I am currently working with @gitcenter on the finnishing touches to make KxoId a federated system. KxoId registration will be down for the next day until we can sort some problems out. Thanks for your patience - I think it will be worth the wait.
+				</p>
+            </div>
+		</v-container>
+		<v-container v-if="!isLoggedIn && false" style="padding-top: 7px; padding-bottom: 7px; max-width: 500px;"> <!-- Not Logged In -->
 			<v-card color="red" tile style="margin: 0; margin-bottom: 7px;" v-if="!serverInfo || !hasPeerMessage">
 				<v-card-text style="text-align: center;">
 					Please install the PeerMessage plugin. You can download and install it from the <a href="./?/plugins" @click.prevent="goto('plugins')">Plugin Store</a>
@@ -31,7 +39,7 @@
 				</v-card-text>
 			</v-card>
 		</v-container>
-		<v-container v-if="!gettingUserInfo && isLoggedIn">
+		<v-container v-if="!gettingUserInfo && isLoggedIn && false">
 			You are already logged in with a KxoId. You cannot create another one!
 		</v-container>
 	</v-container>

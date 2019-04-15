@@ -31,27 +31,27 @@
 					<v-flex xs12 style="padding: 0;"><div style="margin-left: 15px; margin-right: 15px;">Time: {{ searchTime / 1000.0 }} seconds</div></v-flex>
 
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('/' + (result.address || getLinkFromBody(result)))" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ (result.zite == "ZeroTalk" ? "ZeroTalk: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>
 						</v-card>
 					</v-flex>
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('/' + (result.address || getLinkFromBody(result)))" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ (result.zite == "ZeroTalk" ? "ZeroTalk: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>
 						</v-card>
 					</v-flex>
 					
 					<v-flex xs12 v-if="gitCenterResults.length > 0">
-						<v-card v-for="result in gitCenterResults" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + result.address || '#')">
+						<v-card v-for="result in gitCenterResults" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('/' + (result.address || '#'))" @click.native="gotoLink('/' + result.address || '#')">
 							<div style="text-align: center;"><strong style="color: blue;">Git Center: {{ result.title }}</strong></div>
 							<div style="margin-bottom: 5px; text-align: center;">{{ result.description.slice(0, 150) }}</div>
 							<div style="text-align: center;"><small>{{ result.address }}</small></div>
 						</v-card>
 					</v-flex>
 					<v-flex xs12 v-if="zeroExchangeResults.length > 0">
-						<v-card v-for="result in zeroExchangeResults" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/ZeroExchange.bit/?/' + result.site + '/' + result.directory.replace(/data\/users\//, '') + '/' + result.date_added || '#')">
+						<v-card v-for="result in zeroExchangeResults" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('/ZeroExchange.bit/?/' + result.site + '/' + result.directory.replace(/data\/users\//, '') + '/' + result.date_added || '#')" @click.native="gotoLink('/ZeroExchange.bit/?/' + result.site + '/' + result.directory.replace(/data\/users\//, '') + '/' + result.date_added || '#')">
 							<div style="text-align: center;"><strong style="color: blue;">ZeroExchange: {{ result.title }}</strong></div>
 							<div style="margin-bottom: 5px; text-align: center;">{{ result.body.slice(0, 150) }}</div>
 						</v-card>
@@ -63,13 +63,13 @@
 					<v-flex xs12 style="padding: 0;"><div style="margin-left: 15px; margin-right: 15px;">Featured Zites</div></v-flex>
 
 					<v-flex xs12 sm6>
-						<v-card v-for="result in featured.slice(0, Math.round(featured.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in featured.slice(0, Math.round(featured.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('/' + (result.address || getLinkFromBody(result)))" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ (result.address || getLinkFromBody(result)) }}</small></div>
 						</v-card>
 					</v-flex>
 					<v-flex xs12 sm6>
-						<v-card v-for="result in featured.slice(Math.round(featured.length / 2.0))" style="padding: 10px; 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in featured.slice(Math.round(featured.length / 2.0))" style="padding: 10px; 10px; margin-top: 8px; cursor: pointer;  overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('/' + (result.address || getLinkFromBody(result)))" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ (result.address || getLinkFromBody(result)) }}</small></div>
 						</v-card>
@@ -79,7 +79,7 @@
 				<!-- KxoIds -->
 				<v-layout row wrap v-if="currentTab == 'kxoids'">
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="goto('profile/' + result.username)">
+						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('./?/profile' + result.username)" @click.native="goto('profile/' + result.username)">
 							<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
 							<div style="float: right; width: calc(100% - 50px);">
 								<div><strong style="color: blue;">{{ result.username }}</strong></div>
@@ -89,7 +89,7 @@
 						</v-card>
 					</v-flex>
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="goto('profile/' + result.username)">
+						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('./?/profile' + result.username)" @click.native="goto('profile/' + result.username)">
 							<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
 							<div style="float: right; width: calc(100% - 50px);">
 								<div><strong style="color: blue;">{{ result.username }}</strong></div>
@@ -105,14 +105,14 @@
 					<v-flex xs12 style="padding: 0;"><div style="margin-left: 15px; margin-right: 15px;">Time: {{ searchTime / 1000.0 }} seconds</div></v-flex>
 
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('/' + (result.address || getLinkFromBody(result)))" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ result.zite }}</small></div>
 							<!--<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>-->
 						</v-card>
 					</v-flex>
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('/' + (result.address || getLinkFromBody(result)))" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ result.zite }}</small></div>
 							<!--<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>-->
@@ -125,7 +125,7 @@
 					<v-flex xs12 style="padding: 0;"><div style="margin-left: 15px; margin-right: 15px;">Time: {{ searchTime / 1000.0 }} seconds</div></v-flex>
 
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('/' + (result.address || getLinkFromBody(result)))" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ result.zite }}</small></div>
 							<!--<v-btn @click.prevent="pinFile(result.zite, result.address)"></v-btn>-->
@@ -133,7 +133,7 @@
 						</v-card>
 					</v-flex>
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
+						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('/' + (result.address || getLinkFromBody(result)))" @click.native="gotoLink('/' + (result.address || getLinkFromBody(result)))">
 							<div style="text-align: center;"><strong style="color: blue;">{{ result.title }}</strong></div>
 							<div style="text-align: center;"><small>{{ result.zite }}</small></div>
 							<!--<div style="text-align: center;"><small>{{ (result.zite == "KxoVid" ? "KxoVid: " : "") + (result.address || getLinkFromBody(result)) }}</small></div>-->
@@ -823,6 +823,9 @@
 			gotoLink: function(to) {
 				console.log(to);
 				window.location = to;
+			},
+			gotoLinkNewTab: function(to) {
+				page.cmd("wrapperOpenWindow", [to, "_blank"]);
 			},
 			prevPage: function() {
 				if (this.pageNum == 0) return;

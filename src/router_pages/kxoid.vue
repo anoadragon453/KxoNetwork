@@ -9,6 +9,33 @@
 
 			<div>
 				<v-divider></v-divider>
+
+                <v-tabs show-arrows centered v-model="currentTab" style="max-width: 900px; margin-left: auto; margin-right: auto;">
+                    <v-tab key="overview" ripple>Overview</v-tab>
+                    <!--<v-tab key="videos" ripple></v-tab>-->
+                    <v-tab key="support" ripple>Support</v-tab>
+                    <!--<v-tab>Discussion</v-tab>-->
+                </v-tabs>
+
+                <v-divider></v-divider>
+
+                <v-tabs-items v-model="currentTab">
+                    <v-tab-item key="overview" style="padding: 20px;">
+                        <strong>Overview</strong>
+                        <v-divider></v-divider>
+                    </v-tab-item>
+                    <v-tab-item key="support" style="padding: 20px;">
+                        <strong>Zites That Support KxoId</strong>
+                        <v-divider></v-divider>
+                        <v-list style="margin-top: 10px;">
+                            <v-list-tile v-for="zite in supportedZites" :href="'/' + zite.address" @click="gotoLink('/' + zite.address)" :key="zite.address">
+                                <v-list-tile-content>
+                                    <v-list-tile-title>{{ zite.title }}</v-list-tile-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                        </v-list>
+                    </v-tab-item>
+                </v-tabs-items>
 			</div>
 		</v-container>
 	</v-container>
@@ -23,6 +50,14 @@
 		name: "kxoid",
 		data: () => {
 			return {
+                currentTab: 0,
+                supportedZites: [
+                    { title: "KxoVid", address: "14c5LUN73J7KKMznp9LvZWkxpZFWgE1sDz" },
+                    { title: "KxoQA", address: "1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W" },
+                    { title: "ZeroMedium", address: "1CVmbCKWtbskK2GAZLM6gnMuiL6Je25Yds" },
+                    { title: "0Play Game Center", address: "" },
+                    { title: "ThunderWave", address: "" }
+                ]
 			};
 		},
 		beforeMount: function() {
