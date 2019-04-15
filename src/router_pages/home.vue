@@ -79,7 +79,7 @@
 				<!-- KxoIds -->
 				<v-layout row wrap v-if="currentTab == 'kxoids'">
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('./?/profile' + result.username)" @click.native="goto('profile/' + result.username)">
+						<v-card v-for="result in results.slice(0, Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('./?/profile/' + result.username)" @click.native="goto('profile/' + result.username)">
 							<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
 							<div style="float: right; width: calc(100% - 50px);">
 								<div><strong style="color: blue;">{{ result.username }}</strong></div>
@@ -89,7 +89,7 @@
 						</v-card>
 					</v-flex>
 					<v-flex xs12 sm6>
-						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('./?/profile' + result.username)" @click.native="goto('profile/' + result.username)">
+						<v-card v-for="result in results.slice(Math.round(results.length / 2.0))" style="padding: 10px; margin-top: 8px; cursor: pointer; overflow-x: hidden;" @mousedown.middle="gotoLinkNewTab('./?/profile/' + result.username)" @click.native="goto('profile/' + result.username)">
 							<svg style="float: left;" width="45" height="45" v-bind:data-jdenticon-value="result.address"></svg>
 							<div style="float: right; width: calc(100% - 50px);">
 								<div><strong style="color: blue;">{{ result.username }}</strong></div>
