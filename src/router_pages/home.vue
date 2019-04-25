@@ -186,7 +186,7 @@
 					{ title: "Kiwipedia", address: "1KiwiBCVBUcuypVm8FEmUW9YT6fJDXkN9r" },
 					{ title: "NullPaste", address: "1MgHVPCE1ve6QfKrgsqCURzRj72HrRWioz" },
 					{ title: "Sakana", address: "sakana.bit" },
-					{ title: "ZeroMedium", address: "ZeroMedium.bit" },
+					{ title: "StreamZ", address: "1BTZh5pymEKzMYr3qgDtgr4dMmap77QvEs" },
 					{ title: "Nopelist", address: "Styromaniac.blocklist.bit" },
 					{ title: "CodeR", address: "1CodEr7T9xNXSPcwbsvf5fHTqsixDMwDzL" }
 				]

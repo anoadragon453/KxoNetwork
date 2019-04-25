@@ -45,6 +45,7 @@ Vue.use(Vuetify);
 
 // Vue Components
 var Navbar = require("./vue_components/navbar.vue");
+var NavDrawer = require("./vue_components/nav-drawer.vue");
 
 asyncFilter = async (arr, callback) => {
 	const fail = Symbol()
@@ -54,13 +55,18 @@ asyncFilter = async (arr, callback) => {
 var app = new Vue({
 	el: "#app",
 	template: `<div><v-app>
-			<component ref="navbar" :is="navbar" :server-info="serverInfo" :user-info="userInfo" :site-info="siteInfo" :lang-translation="langTranslation"></component>
+			<v-navigation-drawer role="navigation" app temporary clipped fixed light width="225" hide-overlay v-model="drawer" style="padding-bottom: 50px;">
+				<component ref="nav_drawer" :is="nav_drawer" v-model="drawer" v-on:setcallback="setCallback" :getting-user-info="gettingUserInfo" :user-info="userInfo" :server-info="serverInfo" :site-info="siteInfo" :lang-translation="langTranslation"></component>
+			</v-navigation-drawer>
+			<component ref="navbar" :is="navbar" v-on:toggle-drawer="toggleDrawer" :server-info="serverInfo" :user-info="userInfo" :site-info="siteInfo" :lang-translation="langTranslation"></component>
 			<v-content>
 				<component ref="view" :is="currentView" v-on:setcallback="setCallback" v-on:get-user-info="getUserInfo()" :server-info="serverInfo" :user-info="userInfo" :site-info="siteInfo" :getting-user-info="gettingUserInfo" :lang-translation="langTranslation"></component>
 			</v-content>
 		</v-app></div>`,
 	data: {
 		navbar: Navbar,
+		nav_drawer: NavDrawer,
+		drawer: null,
 		currentView: null,
 		siteInfo: null,
 		userInfo: null,
@@ -72,6 +78,9 @@ var app = new Vue({
 		updateSiteInfoCallback: null
 	},
 	methods: {
+		toggleDrawer: function() {
+			this.drawer = !this.drawer;
+		},
 		getUserInfo: function(f = null) {
 			var query = `
 				SELECT * FROM (

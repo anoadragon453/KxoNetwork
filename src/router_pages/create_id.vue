@@ -1,14 +1,17 @@
 <template>
 	<v-container fluid>
-		<v-container style="padding-top: 7px; padding-bottom: 7px; max-width: 500px;">
+		<!--<v-container style="padding-top: 7px; padding-bottom: 7px; max-width: 500px;">
 			<div style="text-align: center;">
                 <strong style="font-size: 1.5em;">Down For the Next 24 Hours</strong>
 				<p>
 					I am currently working with @gitcenter on the finnishing touches to make KxoId a federated system. KxoId registration will be down for the next day until we can sort some problems out. Thanks for your patience - I think it will be worth the wait.
 				</p>
+				<p>
+					Visit <a href="./?/kxoid" @click.prevent="goto('kxoid')">this page</a> to see an explanation on how KxoId works.
+				</p>
             </div>
-		</v-container>
-		<v-container v-if="!isLoggedIn && false" style="padding-top: 7px; padding-bottom: 7px; max-width: 500px;"> <!-- Not Logged In -->
+		</v-container>-->
+		<v-container v-if="!isLoggedIn" style="padding-top: 7px; padding-bottom: 7px; max-width: 500px;"> <!-- Not Logged In -->
 			<v-card color="red" tile style="margin: 0; margin-bottom: 7px;" v-if="!serverInfo || !hasPeerMessage">
 				<v-card-text style="text-align: center;">
 					Please install the PeerMessage plugin. You can download and install it from the <a href="./?/plugins" @click.prevent="goto('plugins')">Plugin Store</a>
@@ -19,7 +22,8 @@
 				<v-card-text>
 					<v-text-field id="username" name="username" ref="usernameinput" label="Username" clearable required suffix="@kxoid.bit" v-model="username" :rules="getRules()"></v-text-field>
 					<v-btn @click="register()" :loading="loading" :disabled="!hasPeerMessage">Create Id</v-btn>
-					<v-btn @click="register_level2()" :loading="loading" :disabled="!hasPeerMessage">Create Level2 Id</v-btn>
+					<!--<v-btn @click="register_level2()" :loading="loading" :disabled="!hasPeerMessage">Create Level2 Id</v-btn>-->
+					<br><small>Registration will take at least 15 seconds.</small>
 
 					<v-divider style="margin-top: 15px;"></v-divider>
 					<v-subheader>What is KxoId?</v-subheader>
@@ -36,10 +40,12 @@
 					<v-subheader>Register Bot Ids</v-subheader>
 
 					<p>Registering an Id for a Bot? <a href="./?/create-bot-id" @click.prevent="goto('create-bot-id')">Click Here</a></p>
+
+					{{ username }}
 				</v-card-text>
 			</v-card>
 		</v-container>
-		<v-container v-if="!gettingUserInfo && isLoggedIn && false">
+		<v-container v-if="!gettingUserInfo && isLoggedIn" style="padding-top: 7px; padding-bottom: 7px; max-width: 500px;">
 			You are already logged in with a KxoId. You cannot create another one!
 		</v-container>
 	</v-container>

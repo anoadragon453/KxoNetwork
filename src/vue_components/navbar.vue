@@ -1,13 +1,26 @@
 <template>
 	<v-toolbar app dark style="padding-right: 45px; padding-left: 45px;">
-		<v-toolbar-title style="cursor: pointer;" @click.prevent="goto('')">{{ ZiteName }} (beta)</v-toolbar-title>
+		<v-toolbar-side-icon @click.stop="toggleDrawer()"></v-toolbar-side-icon>
+
+		<v-menu bottom>
+			<v-toolbar-title slot="activator" style="cursor: pointer;" @mousedown.middle="gotoLinkNewTab('./?/')" @click.prevent="goto('')">
+				<span>{{ ZiteName }} (beta)</span>
+				<v-icon dark>arrow_drop_down</v-icon>
+			</v-toolbar-title>
+			<v-list dense>
+					<v-list-tile v-for="item in kxozites" :key="item.address" :href="'/' + item.address" @click="gotoLink('/' + item.address)">
+						<v-list-tile-title v-text="item.title"></v-list-tile-title>
+					</v-list-tile>
+			</v-list>
+		</v-menu>
+
 		<v-toolbar-items style="margin-left: 10px;">
 			<!--<v-btn flat>News</v-btn>-->
 			<v-btn flat @click="goto('kxoid')">KxoId</v-btn>
 			<v-btn flat @click="goto('plugins')">Plugin Store</v-btn>
 		</v-toolbar-items>
 		<v-spacer></v-spacer>
-		<v-menu left offset-y dark>
+		<!--<v-menu left offset-y dark>
 			<v-btn icon slot="activator">
 		      <v-icon>apps</v-icon>
 		    </v-btn>
@@ -19,9 +32,6 @@
 		    	<v-list-tile @click="gotoLink('/1MiS3ud9JogSQpd1QVmM6ETHRmk5RgJn6E')">
 		    		<v-list-tile-title>KxoZites</v-list-tile-title>
 		    	</v-list-tile>
-		    	<!--<v-list-tile @click="">
-		    		<v-list-tile-title>KxoSoftware</v-list-tile-title>
-		    	</v-list-tile>-->
 		    	<v-list-tile @click="gotoLink('/ZeroMedium.bit')">
 		    		<v-list-tile-title>ZeroMedium</v-list-tile-title>
 		    	</v-list-tile>
@@ -36,11 +46,8 @@
 		    	<v-list-tile @click="gotoLink('/1Ag6xidDHiPgWoDKhfSx4xFQr6WC3NqxZg')">
 		    		<v-list-tile-title>0Play Game Center</v-list-tile-title>
 		    	</v-list-tile>
-		    	<!--<v-list-tile @click="">
-		    		<v-list-tile-title>ZeroNet Instant Messenger</v-list-tile-title>
-		    	</v-list-tile>-->
 		    </v-list>
-		</v-menu>
+		</v-menu>-->
 		<v-toolbar-items>
 			<v-btn flat v-if="!isLoggedIn" @click="login()">Sign In</v-btn>
 			<v-btn flat v-if="!isLoggedIn" @click="goto('create-id')">Register</v-btn>
@@ -66,7 +73,13 @@
 		name: "navbar",
 		data: () => {
 			return {
-				ZiteName: ""
+				ZiteName: "",
+				kxozites: [
+					//{ title: "KxoNetwork", address: "1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P" },
+					{ title: "KxoVid", address: "14c5LUN73J7KKMznp9LvZWkxpZFWgE1sDz" },
+					{ title: "KxoQA", address: "1PHBjZSAc6mHDMkySJNs3XeSXUL7eY7Q7W" },
+					{ title: "ZeroMedium", address: "1CVmbCKWtbskK2GAZLM6gnMuiL6Je25Yds" },
+				],
 			};
 		},
 		beforeMount: function() {
@@ -103,6 +116,12 @@
 			},
 			gotoLink: function(to) {
 				window.location = to;
+			},
+			gotoLinkNewTab: function(to) {
+				page.cmdp("wrapperOpenWindow", [to, "_blank"])
+			},
+			toggleDrawer: function() {
+				this.$emit("toggle-drawer");
 			}
 		}
 	}

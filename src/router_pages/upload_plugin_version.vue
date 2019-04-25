@@ -46,7 +46,8 @@
 				gitcenteraddress: "",
 				version: "",
 				prerelease: false,
-				loading: true
+				loading: true,
+				plugin: null
 			};
 		},
 		beforeMount: function() {
@@ -103,8 +104,8 @@
 				var query = `SELECT plugins.*, json.cert_user_id, plugin_versions.file_download_url, plugin_versions.version FROM plugins LEFT JOIN json USING (json_id) LEFT JOIN plugin_versions ON plugins.default_version_id = plugin_versions.id WHERE plugins.id=${id} AND cert_user_id='${username}@kxoid.bit' limit 1`;
 
 				page.cmd("dbQuery", [query], function(results) {
-					this.loading = false;
-					//console.log(results);
+					self.loading = false;
+					console.log("Results: ", results);
 					self.plugin = results[0];
 				});
 			},
