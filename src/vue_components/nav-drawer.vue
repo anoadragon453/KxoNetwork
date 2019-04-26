@@ -25,6 +25,12 @@
             </v-list-tile-content>
         </v-list-tile>
 
+        <v-divider style="margin-top: 12px;"></v-divider>
+        <v-subheader>Blocklists</v-subheader>
+        <v-list-tile :class="{ 'menu-item-active': routerIsActive('blocklist/license-offenders') }" href="./?/blocklist/license-offenders" @click.prevent="goto('blocklist/license-offenders')">
+            <v-list-tile-title>License Offenders</v-list-tile-title>
+        </v-list-tile>
+
         <v-divider style="margin-top: 12px; margin-bottom: 12px;"></v-divider>
         <v-list-tile :class="{ 'menu-item-active': routerIsActive('settings') }" href="./?/settings" @click.prevent="goto('settings')">
             <v-list-tile-title>Settings</v-list-tile-title>

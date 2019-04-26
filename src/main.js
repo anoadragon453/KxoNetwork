@@ -560,7 +560,10 @@ var Settings = require("./router_pages/settings.vue");
 
 var KxoId = require("./router_pages/kxoid.vue");
 
+var LicenseOffenders = require("./router_pages/license_offenders.vue");
+
 VueZeroFrameRouter.VueZeroFrameRouter_Init(Router, app, [
+	{ route: "blocklist/license-offenders", component: LicenseOffenders },
 	{ route: "kxoid", component: KxoId },
 	{ route: "plugin/:username/:id/add", component: UploadPluginVersion },
 	{ route: "plugin/:username/:id", component: Plugin },
