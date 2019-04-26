@@ -14,6 +14,7 @@
 					<v-tab key="notices" ripple>Notices</v-tab>
                     <v-tab key="about" ripple>About</v-tab>
 					<v-tab key="rules" ripple>Rules/Interpretation</v-tab>
+                    <v-tab key="popular-licenses" ripple>Popular Licenses</v-tab>
                     <!--<v-tab key="videos" ripple></v-tab>-->
                     <!--<v-tab>Discussion</v-tab>-->
                 </v-tabs>
@@ -25,8 +26,9 @@
                         <strong>List</strong>
                         <v-divider style="margin-bottom: 10px;"></v-divider>
                         <p style="color: red;">
-                            Since the majority of Zites probably don't follow <em>any</em> of the rules yet, this Blocklist will not go into effect until May 10th.
+                            Since the majority of Zites probably don't follow <em>any</em> of the rules yet, this Blocklist will not go into effect until May 17th.
                         </p>
+                        <v-switch v-model="active" :value="active" label="Enable" @click="toggleEnable()"></v-switch>
                     </v-tab-item>
 					<v-tab-item key="notices" style="padding: 20px;">
                         <strong>Notices</strong>
@@ -38,11 +40,17 @@
                         <p>
                             This is a blocklist for zites that offend the License of zites they have cloned or used source code from. It applies to:
                             <ul>
-                                <li>If original zite is copyleft, but fork/clone is not (including MPL, GPL, etc.)</li>
-                                <li>original zite requires giving credit, including original source, including copyright, etc. - but offending zite(s) do not follow these</li>
+                                <li>Clones/Forks to zites which use a copyleft license (including MPL, GPL, etc.)</li>
+                                <li>Zites that do not follow the restrictions of the zite they fork/clone/use source code from (examples of restrictions include "Include Original Source", "Include Copyright", "Give Credit", etc.)</li>
+                                <li>Proprietary zites which have <em>explicitly</em> given me a complaint about the offending zite.</li>
+                            </ul>
+                        </p>
+                        <p>
+                            Zites that offend Licenses will be placed under a notice for 7 days. After the 7 days are up and the zite is still offending, the zite will be added to the Blocklist.
+                            <!--<ul>
                                 <li>Proof of first existence must be apparent (e.g. Dates on GitHub) - if ambiguous, neither zite or supposed clones will be added until sufficient evidence is shown (or input/votes by users of ZeroNet)</li>
                                 <li>Zites that offend Licenses will be placed under a notice for 7 days. After the 7 days are up and the zite is still offending, the zite will be added to the Blocklist.</li>
-                            </ul>
+                            </ul>-->
                             <br>
                             <small>Go to the Rules/Interpretation tab for more specific details on how common license restrictions are interpreted.</small>
                         </p>
@@ -51,16 +59,17 @@
                         <strong>Rules and Interpretation</strong>
                         <v-divider style="margin-bottom: 10px;"></v-divider>
                         <p style="color: red;">
-                            Since the majority of Zites probably don't follow <em>any</em> of these rules yet, this Blocklist will not go into effect until May 10th.
+                            Since the majority of Zites probably don't follow <em>any</em> of these rules yet, this Blocklist will not go into effect until May 17th.
                         </p>
 						<p>
 							<ul>
-                                <li>It is enough for zites to have a page that lists relied-upon source code and their licenses and copyrights when following the "Include License" restriction. (e.g. MIT, etc.)</li>
+                                <li>This blocklist will only apply to use of code from other zites, and does <strong>not</strong> <em>currently</em> apply to any non-ZeroNet libraries or websites being used.</li>
+                                <li>It is enough for zites to have a page that lists relied-upon source code and their licenses and copyrights when following the "Include License" restriction.</li>
                                 <li>Zites need not "Include Original" Source as the source for all zites is already visible - <strong>unless</strong> the source of the zite is encrypted or obfuscation has been added.</li>
                                 <li>Zites need not follow the "Include Install Instructions" restriction of GPL and related Licenses as zites aren't installed.</li>
-                                <li>For CopyLeft License - It must be clear on the zite what the License is by placing the License somewhere visible on the zite, or by directly linking to the zite's repository if one exists.</li>
+                                <li>For a Copyleft License - It must be clear on the zite what the License is by placing the License somewhere visible on the zite, or by directly linking to the zite's repository if one exists.</li>
                                 <li>Additionally, in order for a License to apply, it must be clearly visible from the zite (or linked to). If no license is shown, it's implied as proprietary.</li>
-                                <li>Zites cloned from GPL-Licensed zites must <em>State Changes</em> on the zite or provide a link that does so. This doesn't really apply to <em>libraries</em>.</li>
+                                <li>Zites cloned from GPL-Licensed zites (or other Licenses that have this restriction) must <em>State Changes</em> on the zite or provide a link that does so. This doesn't really apply to <em>libraries</em>.</li>
                                 <li>Clones of proprietary zites will not be added to the Blocklist unless the original owner gives explicit notice (you can send me a zeromail <strong>@krixano</strong> or mention me on ZeroTalk or ZeroMe).</li>
                                 <li>Zites that allow cloning allow the redistribution and modification of code, regardless of if any license has been provided. However, if a license is specified on a clonable zite, the restrictions of that license still apply.</li>
 							</ul>
@@ -82,11 +91,230 @@
                             </small>
                         </p>
                     </v-tab-item>
+                    <v-tab-item key="popular-licenses" style="padding: 20px;">
+                        <strong>MIT</strong>
+                        <v-divider style="margin-bottom: 10px;"></v-divider>
+                        <p>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <u>Can:</u>
+                                        <ul>
+                                            <li>Commercial Use</li>
+                                            <li>Modify</li>
+                                            <li>Distribute</li>
+                                            <li>Sublicense</li>
+                                            <li>Private Use</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Cannot:</u>
+                                        <ul>
+                                            <li>Hold Liable</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Must:</u>
+                                        <ul>
+                                            <li>Include Copyright</li>
+                                            <li>Include License</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </p>
+
+                        <strong>MPLv1.1</strong>
+                        <v-divider style="margin-bottom: 10px;"></v-divider>
+                        <p>
+                            <small>Note: Not compatible with GPL</small><br>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <u>Can:</u>
+                                        <ul>
+                                            <li>Distribute</li>
+                                            <li>Modify</li>
+                                            <li>Commercial Use</li>
+                                            <li>Sublicense</li>
+                                            <li>Place Warranty</li>
+                                            <li>Use Patent Claims</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Cannot:</u>
+                                        <ul>
+                                            <li>Hold Liable</li>
+                                            <li>Use Trademark</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Must:</u>
+                                        <ul>
+                                            <li>Include License</li>
+                                            <li>Include Copyright</li>
+                                            <li>State Changes</li>
+                                            <li>Disclose Source</li>
+                                            <li>include Notice</li>
+                                            <li>Give Credit</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </p>
+
+                        <strong>MPLv2</strong>
+                        <v-divider style="margin-bottom: 10px;"></v-divider>
+                        <p>
+                            <small>Note: Compatible with GPL</small><br>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <u>Can:</u>
+                                        <ul>
+                                            <li>Commercial Use</li>
+                                            <li>Modify</li>
+                                            <li>Distribute</li>
+                                            <li>Sublicense</li>
+                                            <li>Place Warranty</li>
+                                            <li>Use Patent Claims</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Cannot:</u>
+                                        <ul>
+                                            <li>Use Trademark</li>
+                                            <li>Hold Liable</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Must:</u>
+                                        <ul>
+                                            <li>Include Coyright</li>
+                                            <li>Include License</li>
+                                            <li>Disclose Source</li>
+                                            <li>Include Original</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </p>
+
+                        <strong>BSD-2-Clause</strong>
+                        <v-divider style="margin-bottom: 10px;"></v-divider>
+                        <p>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <u>Can:</u>
+                                        <ul>
+                                            <li>Commercial Use</li>
+                                            <li>Modify</li>
+                                            <li>Distribute</li>
+                                            <li>Place Warranty</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Cannot:</u>
+                                        <ul>
+                                            <li>Hold Liable</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Must:</u>
+                                        <ul>
+                                            <li>Include Copyright</li>
+                                            <li>Include License</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </p>
+
+                        <strong>GPLv2</strong>
+                        <v-divider style="margin-bottom: 10px;"></v-divider>
+                        <p>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <u>Can:</u>
+                                        <ul>
+                                            <li>Commercial Use</li>
+                                            <li>Modify</li>
+                                            <li>Distribute</li>
+                                            <li>Place Warranty</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Cannot:</u>
+                                        <ul>
+                                            <li>Sublicense</li>
+                                            <li>Hold Liable</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Must:</u>
+                                        <ul>
+                                            <li>Include Original</li>
+                                            <li>Disclose Source</li>
+                                            <li>Include Copyright</li>
+                                            <li>State Changes</li>
+                                            <li>Include License</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </p>
+
+                        <strong>GPLv3</strong>
+                        <v-divider style="margin-bottom: 10px;"></v-divider>
+                        <p>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <u>Can:</u>
+                                        <ul>
+                                            <li>Commercial Use</li>
+                                            <li>Modify</li>
+                                            <li>Distribute</li>
+                                            <li>Place Warranty</li>
+                                            <li>Use Patent Claims</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Cannot:</u>
+                                        <ul>
+                                            <li>Sublicense</li>
+                                            <li>Hold Liable</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <u>Must:</u>
+                                        <ul>
+                                            <li>Include Original</li>
+                                            <li>State Changes</li>
+                                            <li>Disclose Source</li>
+                                            <li>Include License</li>
+                                            <li>Include Copyright</li>
+                                            <li>Include Install Instructions</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </p>
+                    </v-tab-item>
                 </v-tabs-items>
 			</div>
 		</v-container>
 	</v-container>
 </template>
+
+<style scoped>
+    table {
+        width: 100%;
+    }
+</style>
+
 
 <script>
 	var Router = require("../libs/router.js");
@@ -98,6 +326,7 @@
 		data: () => {
 			return {
                 currentTab: 0,
+                active: false
 			};
 		},
 		beforeMount: function() {
@@ -109,10 +338,28 @@
 			this.ZiteName = this.langTranslation["KxoId"];*/
 
 			this.$emit("setcallback", "update", function(userInfo) {
-			});
-		},
-		mounted: function() {
-			var self = this;
+                page.cmdp("filterIncludeList", [])
+                    .then((filters) => {
+                        for (var filter of filters) {
+                            if (filter.inner_path == "data/filters/license_offending.json" && filter.address == self.siteInfo.address) {
+                                self.active = true;
+                                break;
+                            }
+                        }
+                    });
+            });
+            
+            if (this.siteInfo) {
+                page.cmdp("filterIncludeList", [])
+                    .then((filters) => {
+                        for (var filter of filters) {
+                            if (filter.inner_path == "data/filters/license_offending.json" && filter.address == self.siteInfo.address) {
+                                self.active = true;
+                                break;
+                            }
+                        }
+                    });
+            }
 		},
 		computed: {
 			isLoggedIn: function() {
@@ -135,6 +382,13 @@
                     if (doGetResults)
                     	self.getResults();
                     if (callback != null) callback();
+                }
+            },
+            toggleEnable: function() {
+                if (!this.active) {
+                    page.cmdp("filterIncludeAdd", "data/filters/license_offending.json");
+                } else {
+                    page.cmdp("filterIncludeRemove", "data/filters/license_offending.json");
                 }
             },
 			goto: function(to) {
